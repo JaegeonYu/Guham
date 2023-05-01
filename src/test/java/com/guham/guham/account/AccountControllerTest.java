@@ -5,22 +5,29 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 class AccountControllerTest {
-
-    private final MockMvc mockMvc;
+    @Autowired
+    private MockMvc mockMvc;
 
     @Autowired
-    public AccountControllerTest(MockMvc mockMvc) {
-        this.mockMvc = mockMvc;
-    }
+    private AccountRepository accountRepository;
+
+    @MockBean
+    JavaMailSender javaMailSender;
 
     @Test
     @DisplayName("회원 가입 화면 테스트")
@@ -29,5 +36,32 @@ class AccountControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("account/sign-up"))
                 .andExpect(model().attributeExists("signUpForm"));
+    }
+
+    @Test
+    @DisplayName("회원 가입 처리 - 입력값 오류")
+    public void signUpSubmitWithWrongInput() throws Exception {
+        mockMvc.perform(post("/sign-up")
+                .param("nickname", "jaegeon")
+                .param("email","email")
+                .param("password", "123")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("account/sign-up"));
+    }
+
+    @Test
+    @DisplayName("회원 가입 처리 - 입력값 정상")
+    public void signUpSubmitWithRightInput() throws Exception {
+        mockMvc.perform(post("/sign-up")
+                        .param("nickname", "jaegeon")
+                        .param("email","yjk9805@naver.com")
+                        .param("password", "1q2w3e4r")
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/"));
+
+        assertTrue(accountRepository.existsByEmail("yjk9805@naver.com"));
+        then(javaMailSender).should().send(any(SimpleMailMessage.class));
     }
 }
