@@ -37,7 +37,8 @@ public class AccountController {
             return "account/sign-up";
         }
 
-        accountService.signUp(signUpForm);
+        Account account = accountService.signUp(signUpForm);
+        accountService.logIn(account);
         // TODO 회원 가입 처리
         return "redirect:/";
     }
@@ -51,13 +52,13 @@ public class AccountController {
             return view;
         }
 
-        if(!account.getEmailCheckToken().equals(token)){
+        if(!account.isValidToken(token)){
             model.addAttribute("error","wrong-token");
             return view;
         }
 
         account.completeSignUp();
-
+        accountService.logIn(account);
         model.addAttribute("numberOfUser",accountRepository.count());
         model.addAttribute("nickname",account.getNickname());
         return view;
