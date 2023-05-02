@@ -25,6 +25,8 @@ bin/
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
+### NPM
+src/main/resources/static/node_modules
 
 ### NetBeans ###
 /nbproject/private/
