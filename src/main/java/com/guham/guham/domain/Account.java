@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Getter @Setter @EqualsAndHashCode(of = "id")
+@Getter @EqualsAndHashCode(of = "id")
 @Builder @AllArgsConstructor @NoArgsConstructor
 public class Account {
     @Id
@@ -51,5 +51,14 @@ public class Account {
 
     public void generateEmailCheckToken() {
         this.emailCheckToken = UUID.randomUUID().toString();
+    }
+
+    public void completeSignUp() {
+        emailVerified = true;
+        joinedAt = LocalDateTime.now();
+    }
+
+    public boolean isValidToken(String token) {
+        return this.emailCheckToken.equals(token);
     }
 }

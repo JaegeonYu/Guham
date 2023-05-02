@@ -2,7 +2,9 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '2.7.11'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id "com.github.node-gradle.node" version "3.1.0"
 }
+
 
 group = 'com.guham'
 version = '0.0.1-SNAPSHOT'
@@ -16,6 +18,7 @@ configurations {
 
 repositories {
     mavenCentral()
+    gradlePluginPortal()
 }
 
 dependencies {
@@ -26,6 +29,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
+    implementation 'com.github.node-gradle:gradle-node-plugin:3.1.0'
+
+
+
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'com.h2database:h2'
@@ -35,6 +42,18 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
 }
+node {
+    version = '16.15.0'
+    download = true
+    nodeModulesDir = file("${projectDir}/src/main/resources/static")
+
+}
+task copyFrontLib(type: Copy) {
+    from "${projectDir}/src/main/resources/static"
+    into "${projectDir}/build/resources/main/static/."
+}
+copyFrontLib.dependsOn npmInstall
+compileJava.dependsOn copyFrontLib
 
 tasks.named('test') {
     useJUnitPlatform()

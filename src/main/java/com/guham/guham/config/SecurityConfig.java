@@ -30,6 +30,7 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer(){
         return web -> {
             web.ignoring()
+                    .mvcMatchers("/node_modules/**")
                     .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
         };
     }
