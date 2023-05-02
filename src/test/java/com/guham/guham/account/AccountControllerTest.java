@@ -1,5 +1,6 @@
 package com.guham.guham.account;
 
+import com.guham.guham.domain.Account;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,15 +54,20 @@ class AccountControllerTest {
     @Test
     @DisplayName("회원 가입 처리 - 입력값 정상")
     public void signUpSubmitWithRightInput() throws Exception {
+        String email = "yjk9805@naver.com";
+        String rawPassword = "1q2w3e4r";
         mockMvc.perform(post("/sign-up")
                         .param("nickname", "jaegeon")
-                        .param("email","yjk9805@naver.com")
-                        .param("password", "1q2w3e4r")
+                        .param("email",email)
+                        .param("password", rawPassword)
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/"));
 
-        assertTrue(accountRepository.existsByEmail("yjk9805@naver.com"));
+
+        Account account = accountRepository.findByEmail(email);
+        assertNotNull(account);
+        assertNotEquals(account.getPassword(), rawPassword);
         then(javaMailSender).should().send(any(SimpleMailMessage.class));
     }
 }
