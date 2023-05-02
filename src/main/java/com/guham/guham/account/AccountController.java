@@ -1,12 +1,7 @@
 package com.guham.guham.account;
 
-import com.guham.guham.ConsoleMailSender;
 import com.guham.guham.domain.Account;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.message.SimpleMessage;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -22,6 +17,7 @@ import javax.validation.Valid;
 public class AccountController {
     private final SignUpFormValidator signUpFormValidator;
     private final AccountService accountService;
+    private final AccountRepository accountRepository;
 
 
     @InitBinder("signUpForm")
@@ -46,5 +42,25 @@ public class AccountController {
         return "redirect:/";
     }
 
+    @GetMapping("/check-email-token")
+    public String checkEmailToken(String token, String email, Model model){
+        Account account = accountRepository.findByEmail(email);
+        String view = "account/checked-email";
+        if(account == null){
+            model.addAttribute("error","wrong-email");
+            return view;
+        }
+
+        if(!account.getEmailCheckToken().equals(token)){
+            model.addAttribute("error","wrong-token");
+            return view;
+        }
+
+        account.completeSignUp();
+
+        model.addAttribute("numberOfUser",accountRepository.count());
+        model.addAttribute("nickname",account.getNickname());
+        return view;
+    }
 
 }
