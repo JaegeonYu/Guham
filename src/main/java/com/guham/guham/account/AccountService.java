@@ -24,12 +24,12 @@ public class AccountService {
     @Transactional
     public Account signUp(SignUpForm signUpForm) {
         Account newAccount = saveNewAccount(signUpForm);
-        newAccount.generateEmailCheckToken();
         sendSignUpConfirmMail(newAccount);
         return newAccount;
     }
 
-    private void sendSignUpConfirmMail(Account newAccount) {
+    public void sendSignUpConfirmMail(Account newAccount) {
+        newAccount.generateEmailCheckToken();
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(newAccount.getEmail());
         mailMessage.setSubject("구함, 회원 가입 인증");
@@ -56,9 +56,10 @@ public class AccountService {
     public void logIn(Account account) {
         // LawPassWord 이용하지 않기 위한 방법
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-                account.getNickname(),
+                new UserAccount(account),
                 account.getPassword(),
                 List.of(new SimpleGrantedAuthority("ROLE_USER")));
         SecurityContextHolder.getContext().setAuthentication(token);
     }
+
 }
