@@ -8,6 +8,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +19,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class AccountService {
+public class AccountService implements UserDetailsService {
     private final AccountRepository accountRepository;
     private final JavaMailSender javaMailSender;
     private final PasswordEncoder passwordEncoder;
@@ -62,4 +65,16 @@ public class AccountService {
         SecurityContextHolder.getContext().setAuthentication(token);
     }
 
+    @Override
+    public UserDetails loadUserByUsername(String nicknameOrEmail) throws UsernameNotFoundException {
+        Account account = accountRepository.findByEmail(nicknameOrEmail);
+        if(account == null){
+            account = accountRepository.findByNickname(nicknameOrEmail);
+        }
+
+        if(account == null){
+            throw new UsernameNotFoundException(nicknameOrEmail);
+        }
+        return new UserAccount(account);
+    }
 }
