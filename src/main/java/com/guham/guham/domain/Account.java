@@ -1,5 +1,6 @@
 package com.guham.guham.domain;
 
+import com.guham.guham.settings.Profile;
 import lombok.*;
 
 import javax.persistence.*;
@@ -70,5 +71,12 @@ public class Account {
 
     public boolean canSendConfirmEmail() {// 재전송 시 체크용
         return this.emailCheckTokenGeneratedAt.isBefore(LocalDateTime.now().minusHours(1));
+    }
+
+    public void updateProfile(Profile profile) {
+        this.bio = profile.getBio();
+        this.url = profile.getUrl();
+        this.occupation = profile.getOccupation();
+        this.location = profile.getLocation();
     }
 }
