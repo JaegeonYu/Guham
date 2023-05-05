@@ -8,6 +8,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,20 +19,21 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class AccountService {
+@Transactional
+public class AccountService implements UserDetailsService {
     private final AccountRepository accountRepository;
     private final JavaMailSender javaMailSender;
     private final PasswordEncoder passwordEncoder;
 
-    @Transactional
+
     public Account signUp(SignUpForm signUpForm) {
         Account newAccount = saveNewAccount(signUpForm);
-        newAccount.generateEmailCheckToken();
         sendSignUpConfirmMail(newAccount);
         return newAccount;
     }
 
-    private void sendSignUpConfirmMail(Account newAccount) {
+    public void sendSignUpConfirmMail(Account newAccount) {
+        newAccount.generateEmailCheckToken();
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(newAccount.getEmail());
         mailMessage.setSubject("구함, 회원 가입 인증");
@@ -56,9 +60,29 @@ public class AccountService {
     public void logIn(Account account) {
         // LawPassWord 이용하지 않기 위한 방법
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-                account.getNickname(),
+                new UserAccount(account),
                 account.getPassword(),
                 List.of(new SimpleGrantedAuthority("ROLE_USER")));
         SecurityContextHolder.getContext().setAuthentication(token);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserDetails loadUserByUsername(String nicknameOrEmail) throws UsernameNotFoundException {
+        Account account = accountRepository.findByEmail(nicknameOrEmail);
+        if(account == null){
+            account = accountRepository.findByNickname(nicknameOrEmail);
+        }
+
+        if(account == null){
+            throw new UsernameNotFoundException(nicknameOrEmail);
+        }
+        return new UserAccount(account);
+    }
+
+
+    public void completeSignUp(Account account) {
+        account.completeSignUp();
+        logIn(account);
     }
 }
