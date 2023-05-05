@@ -1,6 +1,7 @@
 package com.guham.guham.account;
 
 import com.guham.guham.domain.Account;
+import com.guham.guham.settings.Profile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -84,5 +85,10 @@ public class AccountService implements UserDetailsService {
     public void completeSignUp(Account account) {
         account.completeSignUp();
         logIn(account);
+    }
+
+    public void updateProfile(Account account, Profile profile) {
+        account.updateProfile(profile);
+        accountRepository.save(account);
     }
 }
