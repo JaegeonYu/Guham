@@ -40,7 +40,7 @@ public class Account {
     private String location;
     @Lob
     @Basic(fetch = FetchType.EAGER)
-    private String profileImage;
+    private String profileImage; // HTML DATA URL
 
     private boolean studyCreatedByEmail;
 
@@ -79,5 +79,9 @@ public class Account {
         this.occupation = profile.getOccupation();
         this.location = profile.getLocation();
         this.profileImage = profile.getProfileImage();
+    }
+
+    public void updatePassword(String newPassword) {
+
     }
 }
