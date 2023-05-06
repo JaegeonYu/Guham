@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Set;
@@ -27,6 +28,8 @@ class SettingsControllerTest {
     @Autowired
     MockMvc mockMvc;
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @Autowired
     AccountRepository accountRepository;
@@ -79,5 +82,47 @@ class SettingsControllerTest {
 
         Account bebe = accountRepository.findByNickname("bebe");
         assertNull(bebe.getBio());
+    }
+
+    @Test
+    @DisplayName("패스워드 수정 폼")
+    @WithAccount("bebe")
+    public void updatePasswordForm() throws Exception {
+        mockMvc.perform(get(SETTINGS_PASSWORD_URL))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("account", "passwordForm"));
+    }
+
+    @Test
+    @DisplayName("패스워드 수정 - 입력값 정상")
+    @WithAccount("bebe")
+    public void updatePassword() throws Exception {
+        String newPassword = "1q2w3e4r";
+        mockMvc.perform(post(SETTINGS_PASSWORD_URL)
+                        .param("newPassword", newPassword)
+                        .param("newPasswordConfirm",newPassword)
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(SETTINGS_PASSWORD_URL))
+                .andExpect(flash().attributeExists("message"));
+
+        Account bebe = accountRepository.findByNickname("bebe");
+        assertTrue(passwordEncoder.matches(newPassword, bebe.getPassword()));
+    }
+
+    @Test
+    @DisplayName("패스워드 수정 - 입력값 에러 - 패스워드 불일치")
+    @WithAccount("bebe")
+    public void updatePasswordWithWrongInput() throws Exception {
+        String newPassword = "1q2w3e4r";
+        mockMvc.perform(post(SETTINGS_PASSWORD_URL)
+                        .param("newPassword", newPassword)
+                        .param("newPasswordConfirm",newPassword+"123")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(view().name(SETTINGS_PASSWORD_VIEW_NAME))
+                .andExpect(model().hasErrors())
+                .andExpect(model().attributeExists("passwordForm"))
+                .andExpect(model().attributeExists("account"));
     }
 }
