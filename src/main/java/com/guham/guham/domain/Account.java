@@ -94,4 +94,8 @@ public class Account {
         this.studyUpdatedByWeb = notifications.isStudyUpdatedByWeb();
         this.studyUpdatedByEmail = notifications.isStudyUpdatedByEmail();
     }
+
+    public void updateNickname(String nickname){
+        this.nickname = nickname;
+    }
 }

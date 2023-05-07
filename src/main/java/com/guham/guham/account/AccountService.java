@@ -4,6 +4,7 @@ import com.guham.guham.domain.Account;
 import com.guham.guham.settings.Notifications;
 import com.guham.guham.settings.Profile;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -27,7 +28,9 @@ import java.util.List;
 @Transactional
 public class AccountService implements UserDetailsService {
     private final AccountRepository accountRepository;
+
     private final JavaMailSender javaMailSender;
+
     private final PasswordEncoder passwordEncoder;
 
 
