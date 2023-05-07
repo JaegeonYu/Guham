@@ -3,6 +3,7 @@ package com.guham.guham.account;
 import com.guham.guham.domain.Account;
 import com.guham.guham.settings.Profile;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 @Service
@@ -88,12 +90,14 @@ public class AccountService implements UserDetailsService {
     }
 
     public void updateProfile(Account account, Profile profile) {
-        account.updateProfile(profile);
-        accountRepository.save(account);
+        Account findAccount = accountRepository.findById(account.getId())
+                .orElseThrow(EntityNotFoundException::new);
+        findAccount.updateProfile(profile);
     }
 
     public void updatePassword(Account account, String newPassword) {
-        account.updatePassword(passwordEncoder.encode(newPassword));
-        accountRepository.save(account);
+        Account findAccount = accountRepository.findById(account.getId())
+                .orElseThrow(EntityNotFoundException::new);
+        findAccount.updatePassword(passwordEncoder.encode(newPassword));
     }
 }

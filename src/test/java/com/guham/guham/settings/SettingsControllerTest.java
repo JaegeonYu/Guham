@@ -3,14 +3,19 @@ package com.guham.guham.settings;
 import com.guham.guham.WithAccount;
 import com.guham.guham.account.AccountRepository;
 import com.guham.guham.account.AccountService;
+import com.guham.guham.account.SignUpForm;
 import com.guham.guham.domain.Account;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.context.support.TestExecutionEvent;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Set;
@@ -30,7 +35,8 @@ class SettingsControllerTest {
 
     @Autowired
     PasswordEncoder passwordEncoder;
-
+    @Autowired
+    AccountService accountService;
     @Autowired
     AccountRepository accountRepository;
 
@@ -97,7 +103,7 @@ class SettingsControllerTest {
     @DisplayName("패스워드 수정 - 입력값 정상")
     @WithAccount("bebe")
     public void updatePassword() throws Exception {
-        String newPassword = "1q2w3e4r";
+        String newPassword = "1234qwer";
         mockMvc.perform(post(SETTINGS_PASSWORD_URL)
                         .param("newPassword", newPassword)
                         .param("newPasswordConfirm",newPassword)
