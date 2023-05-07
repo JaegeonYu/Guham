@@ -8,6 +8,7 @@ import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -54,7 +55,7 @@ public class AccountService implements UserDetailsService {
                 .password(passwordEncoder.encode(signUpForm.getPassword()))
                 .studyCreatedByWeb(true)
                 .studyEnrollmentResultByWeb(true)
-                .studyEnrollmentResultByWeb(true)
+                .studyUpdatedByWeb(true)
                 .build();
 
         Account newAccount = accountRepository.save(account);
@@ -63,11 +64,7 @@ public class AccountService implements UserDetailsService {
 
     public void logIn(Account account) {
         // LawPassWord 이용하지 않기 위한 방법
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-                new UserAccount(account),
-                account.getPassword(),
-                List.of(new SimpleGrantedAuthority("ROLE_USER")));
-        SecurityContextHolder.getContext().setAuthentication(token);
+        syncAuthenticationAccount(account);
     }
 
     @Override
@@ -90,21 +87,34 @@ public class AccountService implements UserDetailsService {
         logIn(account);
     }
 
+    private void syncAuthenticationAccount(Account account){
+        Authentication token = new UsernamePasswordAuthenticationToken(
+                new UserAccount(account),
+                account.getPassword(),
+                List.of(new SimpleGrantedAuthority("ROLE_USER")));
+
+        SecurityContextHolder.getContext().setAuthentication(token);
+    }
+
+
     public void updateProfile(Account account, Profile profile) {
         Account findAccount = accountRepository.findById(account.getId())
                 .orElseThrow(EntityNotFoundException::new);
         findAccount.updateProfile(profile);
+        syncAuthenticationAccount(findAccount);
     }
 
     public void updatePassword(Account account, String newPassword) {
         Account findAccount = accountRepository.findById(account.getId())
                 .orElseThrow(EntityNotFoundException::new);
         findAccount.updatePassword(passwordEncoder.encode(newPassword));
+        syncAuthenticationAccount(findAccount);
     }
 
     public void updateNotifications(Account account, Notifications notifications) {
         Account findAccount = accountRepository.findById(account.getId())
                 .orElseThrow(EntityNotFoundException::new);
         findAccount.updateNotifications(notifications);
+        syncAuthenticationAccount(findAccount);
     }
 }
