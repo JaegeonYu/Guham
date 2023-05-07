@@ -1,5 +1,6 @@
 package com.guham.guham.settings;
 
+import com.guham.guham.settings.form.PasswordForm;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
