@@ -1,6 +1,7 @@
 package com.guham.guham.account;
 
 import com.guham.guham.domain.Account;
+import com.guham.guham.settings.Notifications;
 import com.guham.guham.settings.Profile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.crossstore.ChangeSetPersister;
@@ -99,5 +100,11 @@ public class AccountService implements UserDetailsService {
         Account findAccount = accountRepository.findById(account.getId())
                 .orElseThrow(EntityNotFoundException::new);
         findAccount.updatePassword(passwordEncoder.encode(newPassword));
+    }
+
+    public void updateNotifications(Account account, Notifications notifications) {
+        Account findAccount = accountRepository.findById(account.getId())
+                .orElseThrow(EntityNotFoundException::new);
+        findAccount.updateNotifications(notifications);
     }
 }
