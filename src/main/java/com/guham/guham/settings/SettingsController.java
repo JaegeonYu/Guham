@@ -2,13 +2,8 @@ package com.guham.guham.settings;
 
 import com.guham.guham.account.AccountService;
 import com.guham.guham.account.CurrentAccount;
-import com.guham.guham.account.UserAccount;
 import com.guham.guham.domain.Account;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -20,7 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -61,7 +55,7 @@ public class SettingsController {
             return SETTINGS_PROFILE_VIEW_NAME;
         }
 
-        accountService.updateProfile(account, profile);
+        accountService.updateProfile(account.getId(), profile);
         attributes.addFlashAttribute("message", "프로필 수정했습니다.");
         return "redirect:" + SETTINGS_PROFILE_URL;
     }
@@ -81,7 +75,7 @@ public class SettingsController {
             return SETTINGS_PASSWORD_VIEW_NAME;
         }
 
-        accountService.updatePassword(account, passwordForm.getNewPassword());
+        accountService.updatePassword(account.getId(), passwordForm.getNewPassword());
         attributes.addFlashAttribute("message", "패스워드 변경했습니다.");
         return "redirect:" + SETTINGS_PASSWORD_URL;
     }
@@ -101,7 +95,7 @@ public class SettingsController {
             return SETTINGS_NOTIFICATIONS_VIEW_NAME;
         }
 
-        accountService.updateNotifications(account, notifications);
+        accountService.updateNotifications(account.getId(), notifications);
         attributes.addFlashAttribute("message", "알림 설정을 변경했습니다.");
         return "redirect:" + SETTINGS_NOTIFICATIONS_URL;
     }
