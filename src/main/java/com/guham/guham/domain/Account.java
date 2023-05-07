@@ -1,7 +1,7 @@
 package com.guham.guham.domain;
 
-import com.guham.guham.settings.Notifications;
-import com.guham.guham.settings.Profile;
+import com.guham.guham.settings.form.Notifications;
+import com.guham.guham.settings.form.Profile;
 import lombok.*;
 
 import javax.persistence.*;

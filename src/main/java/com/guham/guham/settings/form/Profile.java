@@ -1,4 +1,4 @@
-package com.guham.guham.settings;
+package com.guham.guham.settings.form;
 
 import com.guham.guham.domain.Account;
 import lombok.Data;

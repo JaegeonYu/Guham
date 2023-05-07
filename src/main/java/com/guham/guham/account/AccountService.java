@@ -1,8 +1,8 @@
 package com.guham.guham.account;
 
 import com.guham.guham.domain.Account;
-import com.guham.guham.settings.Notifications;
-import com.guham.guham.settings.Profile;
+import com.guham.guham.settings.form.Notifications;
+import com.guham.guham.settings.form.Profile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
