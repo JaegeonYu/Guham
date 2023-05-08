@@ -87,10 +87,10 @@ public class AccountService implements UserDetailsService {
         logIn(account);
     }
 
-    private void syncAuthenticationAccount(Account accountId){
+    private void syncAuthenticationAccount(Account account){
         Authentication token = new UsernamePasswordAuthenticationToken(
-                new UserAccount(accountId),
-                accountId.getPassword(),
+                new UserAccount(account),
+                account.getPassword(),
                 List.of(new SimpleGrantedAuthority("ROLE_USER")));
 
         SecurityContextHolder.getContext().setAuthentication(token);

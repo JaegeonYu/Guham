@@ -3,6 +3,7 @@ package com.guham.guham.settings;
 import com.guham.guham.account.AccountService;
 import com.guham.guham.account.CurrentAccount;
 import com.guham.guham.domain.Account;
+import com.guham.guham.settings.form.NicknameForm;
 import com.guham.guham.settings.form.Notifications;
 import com.guham.guham.settings.form.PasswordForm;
 import com.guham.guham.settings.form.Profile;
@@ -112,6 +113,24 @@ public class SettingsController {
         return "redirect:" + SETTINGS_NOTIFICATIONS_URL;
     }
 
+    @GetMapping(SETTINGS_ACCOUNT_URL)
+    public String updateAccountForm(@CurrentAccount Account account, Model model) {
+        model.addAttribute(account);
+        model.addAttribute(new NicknameForm(account));
+        return SETTINGS_ACCOUNT_VIEW_NAME;
+    }
 
+    @PostMapping(SETTINGS_ACCOUNT_URL)
+    public String updateAccount(@CurrentAccount Account account, @Valid NicknameForm nicknameForm, Errors errors,
+                                Model model, RedirectAttributes attributes) {
+        if (errors.hasErrors()) {
+            model.addAttribute(account);
+            return SETTINGS_ACCOUNT_VIEW_NAME;
+        }
+
+        accountService.updateNickname(account.getId(), nicknameForm.getNickname());
+        attributes.addFlashAttribute("message", "닉네임을 수정했습니다.");
+        return "redirect:" + SETTINGS_ACCOUNT_URL;
+    }
 
 }
