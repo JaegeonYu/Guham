@@ -1,5 +1,6 @@
 package com.guham.guham.domain;
 
+import com.guham.guham.settings.Notifications;
 import com.guham.guham.settings.Profile;
 import lombok.*;
 
@@ -83,5 +84,14 @@ public class Account {
 
     public void updatePassword(String newPassword) {
         this.password = newPassword;
+    }
+
+    public void updateNotifications(Notifications notifications) {
+        this.studyCreatedByWeb = notifications.isStudyCreatedByWeb();
+        this.studyCreatedByEmail = notifications.isStudyCreatedByEmail();
+        this.studyEnrollmentResultByWeb = notifications.isStudyEnrollmentResultByWeb();
+        this.studyEnrollmentResultByEmail = notifications.isStudyEnrollmentResultByEmail();
+        this.studyUpdatedByWeb = notifications.isStudyUpdatedByWeb();
+        this.studyUpdatedByEmail = notifications.isStudyUpdatedByEmail();
     }
 }
