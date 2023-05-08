@@ -34,7 +34,7 @@ class SettingsControllerTest {
     AccountRepository accountRepository;
 
     @AfterEach
-    public void afterEach(){
+    public void afterEach() {
         accountRepository.deleteAll();
     }
 
@@ -77,7 +77,7 @@ class SettingsControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name(SETTINGS_PROFILE_VIEW_NAME))
                 .andExpect(model().hasErrors())
-                .andExpect(model().attributeExists("account","profile"));
+                .andExpect(model().attributeExists("account", "profile"));
 
         Account bebe = accountRepository.findByNickname("bebe");
         assertNull(bebe.getBio());
@@ -99,7 +99,7 @@ class SettingsControllerTest {
         String newPassword = "1234qwer";
         mockMvc.perform(post(SETTINGS_PASSWORD_URL)
                         .param("newPassword", newPassword)
-                        .param("newPasswordConfirm",newPassword)
+                        .param("newPasswordConfirm", newPassword)
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl(SETTINGS_PASSWORD_URL))
@@ -116,12 +116,68 @@ class SettingsControllerTest {
         String newPassword = "1q2w3e4r";
         mockMvc.perform(post(SETTINGS_PASSWORD_URL)
                         .param("newPassword", newPassword)
-                        .param("newPasswordConfirm",newPassword+"123")
+                        .param("newPasswordConfirm", newPassword + "123")
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(view().name(SETTINGS_PASSWORD_VIEW_NAME))
                 .andExpect(model().hasErrors())
                 .andExpect(model().attributeExists("passwordForm"))
+                .andExpect(model().attributeExists("account"));
+    }
+
+    @Test
+    @DisplayName("닉네임 수정 폼")
+    @WithAccount("bebe")
+    public void updateNicknameForm() throws Exception {
+        mockMvc.perform(get(SETTINGS_ACCOUNT_URL))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("account", "nicknameForm"));
+    }
+
+    @Test
+    @DisplayName("닉네임 수정 - 입력값 정상")
+    @WithAccount("bebe")
+    public void updateNickname() throws Exception {
+        String newNickname = "hello";
+        mockMvc.perform(post(SETTINGS_ACCOUNT_URL)
+                        .param("nickname", newNickname)
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(SETTINGS_ACCOUNT_URL))
+                .andExpect(flash().attributeExists("message"));
+
+        Account byNewNickname = accountRepository.findByNickname(newNickname);
+        assertNotNull(byNewNickname);
+    }
+
+    @Test
+    @DisplayName("닉네임 수정 - 입력값 에러 - 짧은 닉네임")
+    @WithAccount("bebe")
+    public void updateNicknameWithWrongInput() throws Exception {
+        String newNickname = "12";
+        mockMvc.perform(post(SETTINGS_ACCOUNT_URL)
+                        .param("nickname", newNickname)
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(view().name(SETTINGS_ACCOUNT_VIEW_NAME))
+                .andExpect(model().hasErrors())
+                .andExpect(model().attributeExists("account"));
+    }
+
+    @Test
+    @DisplayName("닉네임 수정 - 입력값 에러 - 중복 닉네임")
+    @WithAccount("bebe")
+    public void updateNicknameWithDuplication() throws Exception {
+        String usedNickname = "hello";
+        accountRepository.save(Account.builder()
+                .nickname(usedNickname).build());
+
+        mockMvc.perform(post(SETTINGS_ACCOUNT_URL)
+                        .param("nickname", usedNickname)
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(view().name(SETTINGS_ACCOUNT_VIEW_NAME))
+                .andExpect(model().hasErrors())
                 .andExpect(model().attributeExists("account"));
     }
 }
