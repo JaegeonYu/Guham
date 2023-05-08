@@ -180,4 +180,13 @@ class SettingsControllerTest {
                 .andExpect(model().hasErrors())
                 .andExpect(model().attributeExists("account"));
     }
+
+    @DisplayName("알림 수정 폼")
+    @WithAccount("bebe")
+    public void updateNotificationsForm() throws Exception {
+        mockMvc.perform(get(SETTINGS_NOTIFICATIONS_URL))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("account", "notifications"));
+    }
+
 }
