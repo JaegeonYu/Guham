@@ -1,4 +1,4 @@
-package com.guham.guham.settings;
+package com.guham.guham.settings.form;
 
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;

@@ -54,8 +54,9 @@
            aria-haspopup="true" aria-expanded="false">
           <svg th:if="${#strings.isEmpty(account?.profileImage)}" th:data-jdenticon-value="${#authentication.name}"
                width="24" height="24" class="rounded border bg-light"></svg>
-          <img th:if="${!#strings.isEmpty(account?.profileImage)}" th:src="${account.profileImage}"
+          <img th:if="${!#strings.isEmpty(account?.profileImage)}"  th:src="${account.profileImage}"
                width="24" height="24" class="rounded border"/>
+
         </a>
         <div class="dropdown-menu dropdown-menu-sm-right" aria-labelledby="userDropdown">
           <h6 class="dropdown-header">

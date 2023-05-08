@@ -1,7 +1,7 @@
 package com.guham.guham.domain;
 
-import com.guham.guham.settings.Notifications;
-import com.guham.guham.settings.Profile;
+import com.guham.guham.settings.form.Notifications;
+import com.guham.guham.settings.form.Profile;
 import lombok.*;
 
 import javax.persistence.*;
@@ -17,7 +17,7 @@ import java.util.UUID;
 public class Account {
     @Id
     @GeneratedValue
-    private Long id;
+    private java.lang.Long id;
     @Column(unique = true)
     private String email;
 
@@ -93,5 +93,9 @@ public class Account {
         this.studyEnrollmentResultByEmail = notifications.isStudyEnrollmentResultByEmail();
         this.studyUpdatedByWeb = notifications.isStudyUpdatedByWeb();
         this.studyUpdatedByEmail = notifications.isStudyUpdatedByEmail();
+    }
+
+    public void updateNickname(String nickname){
+        this.nickname = nickname;
     }
 }

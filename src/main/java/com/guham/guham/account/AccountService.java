@@ -1,16 +1,14 @@
 package com.guham.guham.account;
 
 import com.guham.guham.domain.Account;
-import com.guham.guham.settings.Notifications;
-import com.guham.guham.settings.Profile;
+import com.guham.guham.settings.form.Notifications;
+import com.guham.guham.settings.form.Profile;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -27,7 +25,9 @@ import java.util.List;
 @Transactional
 public class AccountService implements UserDetailsService {
     private final AccountRepository accountRepository;
+
     private final JavaMailSender javaMailSender;
+
     private final PasswordEncoder passwordEncoder;
 
 
@@ -97,24 +97,31 @@ public class AccountService implements UserDetailsService {
     }
 
 
-    public void updateProfile(Account account, Profile profile) {
-        Account findAccount = accountRepository.findById(account.getId())
+    public void updateProfile(Long accountId, Profile profile) {
+        Account findAccount = accountRepository.findById(accountId)
                 .orElseThrow(EntityNotFoundException::new);
         findAccount.updateProfile(profile);
         syncAuthenticationAccount(findAccount);
     }
 
-    public void updatePassword(Account account, String newPassword) {
-        Account findAccount = accountRepository.findById(account.getId())
+    public void updatePassword(Long accountId, String newPassword) {
+        Account findAccount = accountRepository.findById(accountId)
                 .orElseThrow(EntityNotFoundException::new);
         findAccount.updatePassword(passwordEncoder.encode(newPassword));
         syncAuthenticationAccount(findAccount);
     }
 
-    public void updateNotifications(Account account, Notifications notifications) {
-        Account findAccount = accountRepository.findById(account.getId())
+    public void updateNotifications(Long accountId, Notifications notifications) {
+        Account findAccount = accountRepository.findById(accountId)
                 .orElseThrow(EntityNotFoundException::new);
         findAccount.updateNotifications(notifications);
+        syncAuthenticationAccount(findAccount);
+    }
+
+    public void updateNickname(Long accountId, String nickname){
+        Account findAccount = accountRepository.findById(accountId)
+                .orElseThrow(EntityNotFoundException::new);
+        findAccount.updateNickname(nickname);
         syncAuthenticationAccount(findAccount);
     }
 }
