@@ -3,24 +3,22 @@ package com.guham.guham.settings;
 import com.guham.guham.account.AccountService;
 import com.guham.guham.account.CurrentAccount;
 import com.guham.guham.domain.Account;
-import com.guham.guham.settings.form.NicknameForm;
-import com.guham.guham.settings.form.Notifications;
-import com.guham.guham.settings.form.PasswordForm;
-import com.guham.guham.settings.form.Profile;
+import com.guham.guham.domain.Tag;
+import com.guham.guham.settings.form.*;
 import com.guham.guham.settings.validator.NicknameFormValidator;
 import com.guham.guham.settings.validator.PasswordFormValidator;
+import com.guham.guham.tag.TagRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -44,6 +42,7 @@ public class SettingsController {
 
     private final AccountService accountService;
     private final NicknameFormValidator nicknameFormValidator;
+    private final TagRepository tagRepository;
 
 
     @InitBinder("passwordForm")
@@ -143,4 +142,17 @@ public class SettingsController {
         return SETTINGS_TAG_VIEW_NAME;
     }
 
+    @PostMapping(SETTINGS_TAG_URL)
+    public ResponseEntity updateTags(@CurrentAccount Account account, @RequestBody TagForm tagForm){
+        String tagTitle = tagForm.getTagTitle();
+        Tag tag = tagRepository.findByTagTitle(tagTitle);
+        if(tag == null){
+            tag = tagRepository.save(Tag.builder()
+                    .title(tagTitle)
+                    .build());
+        }
+
+        accountService.addTag(account.getId(), tag);
+        return ResponseEntity.ok().build();
+    }
 }

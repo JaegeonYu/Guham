@@ -1,6 +1,7 @@
 package com.guham.guham.account;
 
 import com.guham.guham.domain.Account;
+import com.guham.guham.domain.Tag;
 import com.guham.guham.settings.form.Notifications;
 import com.guham.guham.settings.form.Profile;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -72,11 +74,11 @@ public class AccountService implements UserDetailsService {
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String nicknameOrEmail) throws UsernameNotFoundException {
         Account account = accountRepository.findByEmail(nicknameOrEmail);
-        if(account == null){
+        if (account == null) {
             account = accountRepository.findByNickname(nicknameOrEmail);
         }
 
-        if(account == null){
+        if (account == null) {
             throw new UsernameNotFoundException(nicknameOrEmail);
         }
         return new UserAccount(account);
@@ -88,7 +90,7 @@ public class AccountService implements UserDetailsService {
         logIn(account);
     }
 
-    private void syncAuthenticationAccount(Account account){
+    private void syncAuthenticationAccount(Account account) {
         Authentication token = new UsernamePasswordAuthenticationToken(
                 new UserAccount(account),
                 account.getPassword(),
@@ -119,7 +121,7 @@ public class AccountService implements UserDetailsService {
         syncAuthenticationAccount(findAccount);
     }
 
-    public void updateNickname(Long accountId, String nickname){
+    public void updateNickname(Long accountId, String nickname) {
         Account findAccount = accountRepository.findById(accountId)
                 .orElseThrow(EntityNotFoundException::new);
         findAccount.updateNickname(nickname);
@@ -131,8 +133,13 @@ public class AccountService implements UserDetailsService {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(account.getEmail());
         mailMessage.setSubject("팀빌딩구함, 로그인 링크");
-        mailMessage.setText("/login-by-email?token="+account.getEmailCheckToken()+
-                "&email="+account.getEmail());
+        mailMessage.setText("/login-by-email?token=" + account.getEmailCheckToken() +
+                "&email=" + account.getEmail());
         javaMailSender.send(mailMessage);
+    }
+
+    public void addTag(Long accountId, Tag tag) {
+        Optional<Account> byId = accountRepository.findById(accountId);
+        byId.ifPresent(account -> account.getTags().add(tag));
     }
 }
