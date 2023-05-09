@@ -148,4 +148,9 @@ public class AccountService implements UserDetailsService {
         Optional<Account> byId = accountRepository.findById(accountId);
         return byId.orElseThrow().getTags();
     }
+
+    public void removeTag(Long accountId, Tag tag) {
+        Optional<Account> byId = accountRepository.findById(accountId);
+        byId.ifPresent(account -> account.getTags().remove(tag));
+    }
 }
