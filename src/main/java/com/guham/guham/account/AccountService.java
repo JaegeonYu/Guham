@@ -37,8 +37,8 @@ public class AccountService implements UserDetailsService {
         return newAccount;
     }
 
+    // Controller + 재전송 호출 시 Managed Entity 넘기기
     public void sendSignUpConfirmMail(Account newAccount) {
-        newAccount.generateEmailCheckToken();
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(newAccount.getEmail());
         mailMessage.setSubject("구함, 회원 가입 인증");
@@ -58,6 +58,7 @@ public class AccountService implements UserDetailsService {
                 .studyUpdatedByWeb(true)
                 .build();
 
+        account.generateEmailCheckToken();
         Account newAccount = accountRepository.save(account);
         return newAccount;
     }
@@ -123,5 +124,15 @@ public class AccountService implements UserDetailsService {
                 .orElseThrow(EntityNotFoundException::new);
         findAccount.updateNickname(nickname);
         syncAuthenticationAccount(findAccount);
+    }
+
+    public void sendLoginLink(Account account) {
+        account.generateEmailCheckToken();
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(account.getEmail());
+        mailMessage.setSubject("팀빌딩구함, 로그인 링크");
+        mailMessage.setText("/login-by-email?token="+account.getEmailCheckToken()+
+                "&email="+account.getEmail());
+        javaMailSender.send(mailMessage);
     }
 }
