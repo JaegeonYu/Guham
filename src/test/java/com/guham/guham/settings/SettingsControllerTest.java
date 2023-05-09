@@ -189,4 +189,6 @@ class SettingsControllerTest {
                 .andExpect(model().attributeExists("account", "notifications"));
     }
 
+
+
 }
