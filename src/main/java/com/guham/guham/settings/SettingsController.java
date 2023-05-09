@@ -19,6 +19,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -51,7 +53,7 @@ public class SettingsController {
     }
 
     @InitBinder("nicknameForm")
-    public void initBinderNickname(WebDataBinder webDataBinder){
+    public void initBinderNickname(WebDataBinder webDataBinder) {
         webDataBinder.addValidators(nicknameFormValidator);
     }
 
@@ -137,16 +139,23 @@ public class SettingsController {
     }
 
     @GetMapping(SETTINGS_TAG_URL)
-    public String updateTagsForm(@CurrentAccount Account account, Model model){
+    public String updateTagsForm(@CurrentAccount Account account, Model model) {
         model.addAttribute(account);
+        Set<Tag> tags = accountService.getTag(account.getId());
+
+        model.addAttribute("tags", tags.stream()
+                .map(Tag::getTitle)
+                .collect(Collectors.toList()));
+
         return SETTINGS_TAG_VIEW_NAME;
     }
 
-    @PostMapping(SETTINGS_TAG_URL)
-    public ResponseEntity updateTags(@CurrentAccount Account account, @RequestBody TagForm tagForm){
+    @PostMapping( "/settings/tags/add")
+    @ResponseBody
+    public ResponseEntity updateTags(@CurrentAccount Account account, @RequestBody TagForm tagForm) {
         String tagTitle = tagForm.getTagTitle();
-        Tag tag = tagRepository.findByTagTitle(tagTitle);
-        if(tag == null){
+        Tag tag = tagRepository.findByTitle(tagTitle);
+        if (tag == null) {
             tag = tagRepository.save(Tag.builder()
                     .title(tagTitle)
                     .build());

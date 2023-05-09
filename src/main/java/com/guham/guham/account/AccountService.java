@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -141,5 +142,10 @@ public class AccountService implements UserDetailsService {
     public void addTag(Long accountId, Tag tag) {
         Optional<Account> byId = accountRepository.findById(accountId);
         byId.ifPresent(account -> account.getTags().add(tag));
+    }
+
+    public Set<Tag> getTag(Long accountId) {
+        Optional<Account> byId = accountRepository.findById(accountId);
+        return byId.orElseThrow().getTags();
     }
 }
