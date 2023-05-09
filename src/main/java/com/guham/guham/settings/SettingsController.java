@@ -1,5 +1,7 @@
 package com.guham.guham.settings;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.guham.guham.account.AccountService;
 import com.guham.guham.account.CurrentAccount;
 import com.guham.guham.domain.Account;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -45,6 +48,7 @@ public class SettingsController {
     private final AccountService accountService;
     private final NicknameFormValidator nicknameFormValidator;
     private final TagRepository tagRepository;
+    private final ObjectMapper objectMapper;
 
 
     @InitBinder("passwordForm")
@@ -139,7 +143,7 @@ public class SettingsController {
     }
 
     @GetMapping(SETTINGS_TAG_URL)
-    public String updateTagsForm(@CurrentAccount Account account, Model model) {
+    public String updateTagsForm(@CurrentAccount Account account, Model model) throws JsonProcessingException {
         model.addAttribute(account);
         Set<Tag> tags = accountService.getTag(account.getId());
 
@@ -147,10 +151,13 @@ public class SettingsController {
                 .map(Tag::getTitle)
                 .collect(Collectors.toList()));
 
+        List<String> allTags = tagRepository.findAll().stream().map(Tag::getTitle).collect(Collectors.toList());
+        model.addAttribute("whitelist", objectMapper.writeValueAsString(allTags));
+
         return SETTINGS_TAG_VIEW_NAME;
     }
 
-    @PostMapping( SETTINGS_TAG_URL+"/add")
+    @PostMapping(SETTINGS_TAG_URL + "/add")
     @ResponseBody
     public ResponseEntity updateTags(@CurrentAccount Account account, @RequestBody TagForm tagForm) {
         String tagTitle = tagForm.getTagTitle();
@@ -165,7 +172,7 @@ public class SettingsController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping( SETTINGS_TAG_URL+"/remove")
+    @PostMapping(SETTINGS_TAG_URL + "/remove")
     @ResponseBody
     public ResponseEntity removeTags(@CurrentAccount Account account, @RequestBody TagForm tagForm) {
         String tagTitle = tagForm.getTagTitle();
