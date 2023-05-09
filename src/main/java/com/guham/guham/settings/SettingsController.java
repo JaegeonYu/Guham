@@ -38,6 +38,10 @@ public class SettingsController {
     static final String SETTINGS_ACCOUNT_VIEW_NAME = "settings/account";
     static final String SETTINGS_ACCOUNT_URL = "/" + SETTINGS_ACCOUNT_VIEW_NAME;
 
+    static final String SETTINGS_TAG_VIEW_NAME = "settings/tags";
+    static final String SETTINGS_TAG_URL = "/" + SETTINGS_TAG_VIEW_NAME;
+
+
     private final AccountService accountService;
     private final NicknameFormValidator nicknameFormValidator;
 
@@ -131,6 +135,12 @@ public class SettingsController {
         accountService.updateNickname(account.getId(), nicknameForm.getNickname());
         attributes.addFlashAttribute("message", "닉네임을 수정했습니다.");
         return "redirect:" + SETTINGS_ACCOUNT_URL;
+    }
+
+    @GetMapping(SETTINGS_TAG_URL)
+    public String updateTagsForm(@CurrentAccount Account account, Model model){
+        model.addAttribute(account);
+        return SETTINGS_TAG_VIEW_NAME;
     }
 
 }
