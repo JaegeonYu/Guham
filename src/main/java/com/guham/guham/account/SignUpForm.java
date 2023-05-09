@@ -1,5 +1,6 @@
 package com.guham.guham.account;
 
+import com.guham.guham.domain.Account;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.Email;
@@ -20,4 +21,12 @@ public class SignUpForm {
     @NotBlank
     @Length(min = 8, max = 50)
     private String password;
+
+    public Account toEntity(){
+        return Account.builder()
+                .nickname(nickname)
+                .email(email)
+                .password(password)
+                .build();
+    }
 }

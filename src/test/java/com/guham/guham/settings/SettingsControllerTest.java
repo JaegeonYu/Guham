@@ -1,17 +1,23 @@
 package com.guham.guham.settings;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.guham.guham.WithAccount;
 import com.guham.guham.account.AccountRepository;
 import com.guham.guham.account.AccountService;
 import com.guham.guham.domain.Account;
+import com.guham.guham.domain.Tag;
+import com.guham.guham.settings.form.TagForm;
+import com.guham.guham.tag.TagRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.guham.guham.settings.SettingsController.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 class SettingsControllerTest {
     @Autowired
     MockMvc mockMvc;
@@ -32,6 +39,11 @@ class SettingsControllerTest {
     AccountService accountService;
     @Autowired
     AccountRepository accountRepository;
+    @Autowired
+    ObjectMapper objectMapper;
+
+    @Autowired
+    TagRepository tagRepository;
 
     @AfterEach
     public void afterEach() {
@@ -181,12 +193,61 @@ class SettingsControllerTest {
                 .andExpect(model().attributeExists("account"));
     }
 
+    @Test
     @DisplayName("알림 수정 폼")
     @WithAccount("bebe")
     public void updateNotificationsForm() throws Exception {
         mockMvc.perform(get(SETTINGS_NOTIFICATIONS_URL))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("account", "notifications"));
+    }
+
+    @Test
+    @DisplayName("태그 수정 폼")
+    @WithAccount("bebe")
+    public void updateTagsForm() throws Exception {
+        mockMvc.perform(get(SETTINGS_TAG_URL))
+                .andExpect(status().isOk())
+                .andExpect(view().name(SETTINGS_TAG_VIEW_NAME))
+                .andExpect(model().attributeExists("account", "whitelist", "tags"));
+    }
+
+    @Test
+    @DisplayName("태그 수정 - 입력값 정상")
+    @WithAccount("bebe")
+    public void updateTags() throws Exception {
+        TagForm tagForm = new TagForm();
+        tagForm.setTagTitle("newTag");
+
+        mockMvc.perform(post(SETTINGS_TAG_URL + "/add")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(tagForm))
+                        .with(csrf()))
+                .andExpect(status().isOk());
+
+        Tag newTag = tagRepository.findByTitle("newTag");
+        assertNotNull(newTag);
+        assertTrue(accountRepository.findByNickname("bebe").getTags().contains(newTag));
+    }
+
+    @Test
+    @DisplayName("태그 제거 - 입력값 정상")
+    @WithAccount("bebe")
+    public void removeTags() throws Exception {
+        Account bebe = accountRepository.findByNickname("bebe");
+        Tag newTag = tagRepository.save(Tag.builder().title("newTag").build());
+        accountService.addTag(bebe.getId(), newTag);
+
+        TagForm tagForm = new TagForm();
+        tagForm.setTagTitle("newTag");
+
+        mockMvc.perform(post(SETTINGS_TAG_URL + "/remove")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(tagForm))
+                        .with(csrf()))
+                .andExpect(status().isOk());
+
+        assertFalse(bebe.getTags().contains(newTag));
     }
 
 }

@@ -1,26 +1,29 @@
 package com.guham.guham.settings;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.guham.guham.account.AccountService;
 import com.guham.guham.account.CurrentAccount;
 import com.guham.guham.domain.Account;
-import com.guham.guham.settings.form.NicknameForm;
-import com.guham.guham.settings.form.Notifications;
-import com.guham.guham.settings.form.PasswordForm;
-import com.guham.guham.settings.form.Profile;
+import com.guham.guham.domain.Tag;
+import com.guham.guham.settings.form.*;
 import com.guham.guham.settings.validator.NicknameFormValidator;
 import com.guham.guham.settings.validator.PasswordFormValidator;
+import com.guham.guham.tag.TagRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -38,8 +41,14 @@ public class SettingsController {
     static final String SETTINGS_ACCOUNT_VIEW_NAME = "settings/account";
     static final String SETTINGS_ACCOUNT_URL = "/" + SETTINGS_ACCOUNT_VIEW_NAME;
 
+    static final String SETTINGS_TAG_VIEW_NAME = "settings/tags";
+    static final String SETTINGS_TAG_URL = "/" + SETTINGS_TAG_VIEW_NAME;
+
+
     private final AccountService accountService;
     private final NicknameFormValidator nicknameFormValidator;
+    private final TagRepository tagRepository;
+    private final ObjectMapper objectMapper;
 
 
     @InitBinder("passwordForm")
@@ -48,7 +57,7 @@ public class SettingsController {
     }
 
     @InitBinder("nicknameForm")
-    public void initBinderNickname(WebDataBinder webDataBinder){
+    public void initBinderNickname(WebDataBinder webDataBinder) {
         webDataBinder.addValidators(nicknameFormValidator);
     }
 
@@ -133,4 +142,46 @@ public class SettingsController {
         return "redirect:" + SETTINGS_ACCOUNT_URL;
     }
 
+    @GetMapping(SETTINGS_TAG_URL)
+    public String updateTagsForm(@CurrentAccount Account account, Model model) throws JsonProcessingException {
+        model.addAttribute(account);
+        Set<Tag> tags = accountService.getTag(account.getId());
+
+        model.addAttribute("tags", tags.stream()
+                .map(Tag::getTitle)
+                .collect(Collectors.toList()));
+
+        List<String> allTags = tagRepository.findAll().stream().map(Tag::getTitle).collect(Collectors.toList());
+        model.addAttribute("whitelist", objectMapper.writeValueAsString(allTags));
+
+        return SETTINGS_TAG_VIEW_NAME;
+    }
+
+    @PostMapping(SETTINGS_TAG_URL + "/add")
+    @ResponseBody
+    public ResponseEntity updateTags(@CurrentAccount Account account, @RequestBody TagForm tagForm) {
+        String tagTitle = tagForm.getTagTitle();
+        Tag tag = tagRepository.findByTitle(tagTitle);
+        if (tag == null) {
+            tag = tagRepository.save(Tag.builder()
+                    .title(tagTitle)
+                    .build());
+        }
+
+        accountService.addTag(account.getId(), tag);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(SETTINGS_TAG_URL + "/remove")
+    @ResponseBody
+    public ResponseEntity removeTags(@CurrentAccount Account account, @RequestBody TagForm tagForm) {
+        String tagTitle = tagForm.getTagTitle();
+        Tag tag = tagRepository.findByTitle(tagTitle);
+        if (tag == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        accountService.removeTag(account.getId(), tag);
+        return ResponseEntity.ok().build();
+    }
 }
