@@ -13,13 +13,18 @@ import java.util.UUID;
 @Entity
 @Getter
 @EqualsAndHashCode(of = "id")
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
 public class Account {
+    @Builder
+    public Account(String email, String nickname, String password) {
+        this.email = email;
+        this.nickname = nickname;
+        this.password = password;
+    }
+
     @Id
     @GeneratedValue
-    private java.lang.Long id;
+    private Long id;
     @Column(unique = true)
     private String email;
 
