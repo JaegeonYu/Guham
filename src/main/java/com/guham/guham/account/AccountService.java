@@ -3,11 +3,15 @@ package com.guham.guham.account;
 import com.guham.guham.domain.Account;
 import com.guham.guham.domain.Tag;
 import com.guham.guham.domain.Zone;
+import com.guham.guham.mail.EmailMessage;
+import com.guham.guham.mail.EmailService;
 import com.guham.guham.settings.form.Notifications;
 import com.guham.guham.settings.form.Profile;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -19,6 +23,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
@@ -27,10 +33,11 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class AccountService implements UserDetailsService {
     private final AccountRepository accountRepository;
 
-    private final JavaMailSender javaMailSender;
+    private final EmailService emailService;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -43,13 +50,14 @@ public class AccountService implements UserDetailsService {
 
     // Controller + 재전송 호출 시 Managed Entity 넘기기
     public void sendSignUpConfirmMail(Account newAccount) {
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setTo(newAccount.getEmail());
-        mailMessage.setSubject("구함, 회원 가입 인증");
-        mailMessage.setText("/check-email-token?token=" + newAccount.getEmailCheckToken() +
-                "&email=" + newAccount.getEmail());
+        EmailMessage email = EmailMessage.builder()
+                .to(newAccount.getEmail())
+                .subject("구함, 회원 가입 인증")
+                .message("/check-email-token?token=" + newAccount.getEmailCheckToken() +
+                        "&email=" + newAccount.getEmail())
+                .build();
 
-        javaMailSender.send(mailMessage);
+        emailService.sendEmail(email);
     }
 
     private Account saveNewAccount(SignUpForm signUpForm) {
@@ -125,12 +133,14 @@ public class AccountService implements UserDetailsService {
 
     public void sendLoginLink(Account account) {
         account.generateEmailCheckToken();
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setTo(account.getEmail());
-        mailMessage.setSubject("팀빌딩구함, 로그인 링크");
-        mailMessage.setText("/login-by-email?token=" + account.getEmailCheckToken() +
-                "&email=" + account.getEmail());
-        javaMailSender.send(mailMessage);
+        EmailMessage email = EmailMessage.builder()
+                .to(account.getEmail())
+                .subject("팀빌딩구함, 로그인 링크")
+                .message("/login-by-email?token=" + account.getEmailCheckToken() +
+                        "&email=" + account.getEmail())
+                .build();
+
+        emailService.sendEmail(email);
     }
 
     public void addTag(Long accountId, Tag tag) {

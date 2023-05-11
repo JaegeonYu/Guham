@@ -1,6 +1,8 @@
 package com.guham.guham.account;
 
 import com.guham.guham.domain.Account;
+import com.guham.guham.mail.EmailMessage;
+import com.guham.guham.mail.EmailService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +34,7 @@ class AccountControllerTest {
     private AccountRepository accountRepository;
 
     @MockBean
-    JavaMailSender javaMailSender;
+    EmailService emailService;
 
     @Test
     @DisplayName("회원 가입 화면 테스트")
@@ -76,7 +78,7 @@ class AccountControllerTest {
         assertNotNull(account);
         assertNotNull(account.getEmailCheckToken());
         assertNotEquals(account.getPassword(), rawPassword);
-        then(javaMailSender).should().send(any(SimpleMailMessage.class));
+        then(emailService).should().sendEmail(any(EmailMessage.class));
     }
 
     @Test
