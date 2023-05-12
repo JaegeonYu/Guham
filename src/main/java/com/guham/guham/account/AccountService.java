@@ -2,6 +2,7 @@ package com.guham.guham.account;
 
 import com.guham.guham.domain.Account;
 import com.guham.guham.domain.Tag;
+import com.guham.guham.domain.Zone;
 import com.guham.guham.settings.form.Notifications;
 import com.guham.guham.settings.form.Profile;
 import lombok.RequiredArgsConstructor;
@@ -145,5 +146,20 @@ public class AccountService implements UserDetailsService {
     public void removeTag(Long accountId, Tag tag) {
         Optional<Account> byId = accountRepository.findById(accountId);
         byId.ifPresent(account -> account.getTags().remove(tag));
+    }
+
+    public Set<Zone> getZone(Long accountId) {
+        Optional<Account> byId = accountRepository.findById(accountId);
+        return byId.orElseThrow().getZones();
+    }
+
+    public void addZone(Long accountId, Zone zone) {
+        Optional<Account> byId = accountRepository.findById(accountId);
+        byId.ifPresent(account -> account.getZones().add(zone));
+    }
+
+    public void removeZone(Long accountId, Zone zone) {
+        Optional<Account> byId = accountRepository.findById(accountId);
+        byId.ifPresent(account -> account.getZones().remove(zone));
     }
 }
