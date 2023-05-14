@@ -39,8 +39,10 @@ public class TeamController {
     }
 
     @PostMapping("/new-team")
-    public String newTeamSubmit(@CurrentAccount Account account, @Valid TeamForm teamForm, Errors errors) {
+    public String newTeamSubmit(@CurrentAccount Account account, @Valid TeamForm teamForm, Errors errors
+            , Model model) {
         if (errors.hasErrors()) {
+            model.addAttribute(account);
             return "team/form";
         }
 
@@ -53,5 +55,12 @@ public class TeamController {
         model.addAttribute(account);
         model.addAttribute(teamRepository.findByPath(path));
         return "team/view";
+    }
+
+    @GetMapping("/team/{path}/members")
+    public String viewTeamMembers(@CurrentAccount Account account, @PathVariable String path, Model model){
+        model.addAttribute(account);
+        model.addAttribute(teamRepository.findByPath(path));
+        return "team/members";
     }
 }
