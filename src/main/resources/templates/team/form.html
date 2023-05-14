@@ -11,11 +11,11 @@
   </div>
   <div class="row justify-content-center">
     <form class="need-validation col-sm-10" action="#"
-    th:action="@{/new-team}" th:object="${studyForm}" method="post" novalidate>
+    th:action="@{/new-team}" th:object="${teamForm}" method="post" novalidate>
       <div class="form-group">
         <label for="path">팀 URL</label>
         <input id="path" type="text" th:field="*{path}" class="form-control"
-               placeholder="예) study-path" aria-describedby="pathHelp" required min="2" max="20">
+               placeholder="예) team-path" aria-describedby="pathHelp" required min="2" max="20">
         <small id="pathHelp" class="form-text text-muted">
           공백없이 문자, 숫자, 대시(-)와 언더바(_)만 2자 이상 20자 이내로 입력하세요. 팀 홈 주소에 사용합니다. 예) /team/<b>team-path</b>
         </small>

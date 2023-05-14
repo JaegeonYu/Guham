@@ -1,6 +1,8 @@
 package com.guham.guham.domain;
 
+import com.guham.guham.account.UserAccount;
 import lombok.*;
+import org.springframework.security.core.userdetails.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -10,14 +12,21 @@ import java.util.Set;
 @Entity
 @Getter @EqualsAndHashCode(of = "id")
 @Builder @AllArgsConstructor @NoArgsConstructor
+@NamedEntityGraph(name = "Team.withAll", attributeNodes = {
+        @NamedAttributeNode("tags"),
+        @NamedAttributeNode("zones"),
+        @NamedAttributeNode("managers"),
+        @NamedAttributeNode("members")})
 public class Team {
     @Id @GeneratedValue
     private Long id;
 
     @ManyToMany
+    @Builder.Default
     private Set<Account> managers = new HashSet<>();
 
     @ManyToMany
+    @Builder.Default
     private Set<Account> members = new HashSet<>();
 
     @Column(unique = true)
@@ -31,9 +40,11 @@ public class Team {
     @Lob @Basic(fetch = FetchType.EAGER)
     private String image;
     @ManyToMany
+    @Builder.Default
     private Set<Tag> tags = new HashSet<>();
 
     @ManyToMany
+    @Builder.Default
     private Set<Zone> zones = new HashSet<>();
 
     private LocalDateTime publishedDateTime;
@@ -52,5 +63,19 @@ public class Team {
 
     public void addManager(Account account) {
         this.managers.add(account);
+    }
+
+    public boolean isJoinable(UserAccount userAccount){
+        Account account = userAccount.getAccount();
+        return this.isPublished() && this.isRecruiting()
+                && !this.members.contains(account) && this.managers.contains(account);
+    }
+
+    public boolean isMember(UserAccount userAccount){
+        return this.members.contains(userAccount.getAccount());
+    }
+
+    public boolean isManager(UserAccount userAccount){
+        return this.managers.contains(userAccount.getAccount());
     }
 }

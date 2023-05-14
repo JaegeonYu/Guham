@@ -19,7 +19,7 @@ public class TeamValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
         TeamForm teamForm = (TeamForm) target;
-        if(teamRepository.existsByPath(teamForm.getTeam())){
+        if(teamRepository.existsByPath(teamForm.getTeam().getPath())){
             errors.rejectValue("path","wrong.path", "해당 팀 경로값을 사용할 수 없습니다");
         }
     }

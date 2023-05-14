@@ -12,6 +12,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.validation.Valid;
@@ -22,6 +23,7 @@ import java.nio.charset.StandardCharsets;
 @RequiredArgsConstructor
 public class TeamController {
     private final TeamService teamService;
+    private final TeamRepository teamRepository;
     private final TeamValidator teamValidator;
 
     @InitBinder("teamForm")
@@ -44,5 +46,12 @@ public class TeamController {
 
         Team team = teamService.createTeam(teamForm.getTeam(), account);
         return "redirect:/team/" + URLEncoder.encode(team.getPath(), StandardCharsets.UTF_8);
+    }
+
+    @GetMapping("/team/{path}")
+    public String viewTeam(@CurrentAccount Account account, @PathVariable String path, Model model){
+        model.addAttribute(account);
+        model.addAttribute(teamRepository.findByPath(path));
+        return "team/view";
     }
 }
