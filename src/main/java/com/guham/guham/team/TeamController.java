@@ -23,7 +23,6 @@ import java.nio.charset.StandardCharsets;
 @RequiredArgsConstructor
 public class TeamController {
     private final TeamService teamService;
-    private final TeamRepository teamRepository;
     private final TeamValidator teamValidator;
 
     @InitBinder("teamForm")
@@ -52,15 +51,17 @@ public class TeamController {
 
     @GetMapping("/team/{path}")
     public String viewTeam(@CurrentAccount Account account, @PathVariable String path, Model model){
+        Team team = teamService.getTeam(path);
         model.addAttribute(account);
-        model.addAttribute(teamRepository.findByPath(path));
+        model.addAttribute(team);
         return "team/view";
     }
 
     @GetMapping("/team/{path}/members")
     public String viewTeamMembers(@CurrentAccount Account account, @PathVariable String path, Model model){
+        Team team = teamService.getTeam(path);
         model.addAttribute(account);
-        model.addAttribute(teamRepository.findByPath(path));
+        model.addAttribute(team);
         return "team/members";
     }
 }

@@ -1,6 +1,7 @@
 package com.guham.guham.domain;
 
 import com.guham.guham.account.UserAccount;
+import com.guham.guham.team.form.TeamDescriptionForm;
 import lombok.*;
 import org.springframework.security.core.userdetails.User;
 
@@ -77,5 +78,10 @@ public class Team {
 
     public boolean isManager(UserAccount userAccount){
         return this.managers.contains(userAccount.getAccount());
+    }
+
+    public void updateDescription(TeamDescriptionForm teamDescriptionForm){
+        this.shortDescription = teamDescriptionForm.getShortDescription();
+        this.fullDescription = teamDescriptionForm.getFullDescription();
     }
 }
