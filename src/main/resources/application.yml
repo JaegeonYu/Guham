@@ -23,3 +23,8 @@ logging:
 
 app:
   host: http://localhost:8080
+
+
+servlet:
+  tomcat:
+    max-http-form-post-size: 5MB

@@ -18,6 +18,14 @@ import java.util.Set;
         @NamedAttributeNode("zones"),
         @NamedAttributeNode("managers"),
         @NamedAttributeNode("members")})
+@NamedEntityGraph(name = "Team.withTagsAndManager", attributeNodes = {
+        @NamedAttributeNode("tags"),
+        @NamedAttributeNode("managers"),
+        })
+@NamedEntityGraph(name = "Team.withZonesAndManager", attributeNodes = {
+        @NamedAttributeNode("zones"),
+        @NamedAttributeNode("managers"),
+})
 public class Team {
     @Id @GeneratedValue
     private Long id;
@@ -83,5 +91,17 @@ public class Team {
     public void updateDescription(TeamDescriptionForm teamDescriptionForm){
         this.shortDescription = teamDescriptionForm.getShortDescription();
         this.fullDescription = teamDescriptionForm.getFullDescription();
+    }
+
+    public void enableBanner(){
+        useBanner = true;
+    }
+
+    public void disableBanner(){
+        useBanner = false;
+    }
+
+    public void updateTeamBanner(String image){
+        this.image = image;
     }
 }
