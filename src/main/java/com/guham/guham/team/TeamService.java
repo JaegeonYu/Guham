@@ -118,4 +118,26 @@ public class TeamService {
     public void stopRecruit(Team team) {
         team.stopRecruit();
     }
+
+    public boolean isValidPath(String newPath) {
+        if(teamRepository.existsByPath(newPath)){
+            return false;
+        }
+        return true;
+    }
+
+    public void updateStudyPath(Team team, String newPath) {
+        team.updatePath(newPath);
+    }
+
+    public boolean isValidTitle(String newTitle) {
+        if(teamRepository.existsByTitle(newTitle)){
+            return false;
+        }
+        return true;
+    }
+
+    public void updateStudyTitle(Team team, String newTitle) {
+        team.updateTitle(newTitle);
+    }
 }

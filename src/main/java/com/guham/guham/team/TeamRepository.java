@@ -8,8 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public interface TeamRepository extends JpaRepository<Team, Long> {
     boolean existsByPath(String path);
-    // findByPath 발생 시 Team의 member, manager, zones, tags 모두  필요
 
+    // findByPath 발생 시 Team의 member, manager, zones, tags 모두  필요
     @EntityGraph(value = "Team.withAll", type = EntityGraph.EntityGraphType.LOAD)
     Team findByPath(String path);
     @EntityGraph(value = "Team.withTagsAndManager", type = EntityGraph.EntityGraphType.FETCH)
@@ -20,4 +20,6 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
 
     @EntityGraph(value = "Team.withManager", type = EntityGraph.EntityGraphType.FETCH)
     Team findTeamWithManagersByPath(String path);
+
+    boolean existsByTitle(String title);
 }

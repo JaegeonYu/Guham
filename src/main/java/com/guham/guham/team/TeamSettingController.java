@@ -228,4 +228,38 @@ public class TeamSettingController {
         attributes.addFlashAttribute("message", "인원 모집을 종료합니다.");
         return "redirect:/team/" + getEncodedPath(path) + "/settings/team";
     }
+
+    @PostMapping("/team/path")
+    public String updateTeamPath(@CurrentAccount Account account, @PathVariable String path, String newPath,
+                                  Model model, RedirectAttributes attributes) {
+        Team team = teamService.getStudyToUpdateStatus(account, path);
+        if (!teamService.isValidPath(newPath)) {
+            model.addAttribute(account);
+            model.addAttribute(team);
+            model.addAttribute("teamPathError", "해당 팀 경로는 사용할 수 없습니다. 다른 값을 입력하세요.");
+            return "team/settings/team";
+        }
+
+        teamService.updateStudyPath(team, newPath);
+        attributes.addFlashAttribute("message", "팀 경로를 수정했습니다.");
+        return "redirect:/team/" + getEncodedPath(path) + "/settings/team";
+    }
+
+    @PostMapping("/team/title")
+    public String updateTeamTitle(@CurrentAccount Account account, @PathVariable String path, String newTitle,
+                                   Model model, RedirectAttributes attributes) {
+        Team team = teamService.getStudyToUpdateStatus(account, path);
+        if(!teamService.isValidTitle(newTitle)) {
+            model.addAttribute(account);
+            model.addAttribute(team);
+            model.addAttribute("teamTitleError", "팀 이름을 다시 입력하세요.");
+            return "team/settings/team";
+        }
+
+        teamService.updateStudyTitle(team, newTitle);
+        attributes.addFlashAttribute("message", "팀 이름을 수정했습니다.");
+        return "redirect:/team/" + getEncodedPath(path) + "/settings/team";
+    }
+
+
 }
