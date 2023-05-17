@@ -60,10 +60,10 @@ public class TeamSettingController {
 
         teamService.updateTeamDescription(team, teamDescriptionForm);
         attributes.addFlashAttribute("message", "팀 소개를 수정했습니다.");
-        return "redirect:/team/" + getPath(path) + "/settings/description";
+        return "redirect:/team/" + getEncodedPath(path) + "/settings/description";
     }
 
-    private String getPath(String path) {
+    private String getEncodedPath(String path) {
         return URLEncoder.encode(path, StandardCharsets.UTF_8);
     }
 
@@ -81,7 +81,7 @@ public class TeamSettingController {
         Team team = teamService.getTeamToUpdate(account, path);
         teamService.updateTeamBanner(team, image);
         attributes.addFlashAttribute("message", "팀 배너를 수정했습니다.");
-        return "redirect:/team/" + getPath(path) + "/settings/banner";
+        return "redirect:/team/" + getEncodedPath(path) + "/settings/banner";
     }
 
 
@@ -89,14 +89,14 @@ public class TeamSettingController {
     public String enableBanner(@CurrentAccount Account account, @PathVariable String path) {
         Team team = teamService.getTeamToUpdate(account, path);
         teamService.enableTeamBanner(team);
-        return "redirect:/team/" + getPath(path) + "/settings/banner";
+        return "redirect:/team/" + getEncodedPath(path) + "/settings/banner";
     }
 
     @PostMapping("/banner/disable")
     public String disableBanner(@CurrentAccount Account account, @PathVariable String path) {
         Team team = teamService.getTeamToUpdate(account, path);
         teamService.disableTeamBanner(team);
-        return "redirect:/team/" + getPath(path) + "/settings/banner";
+        return "redirect:/team/" + getEncodedPath(path) + "/settings/banner";
     }
 
     @GetMapping("/tags")
@@ -173,5 +173,59 @@ public class TeamSettingController {
 
         teamService.removeZone(team, zone);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/team")
+    public String studySettingForm(@CurrentAccount Account account, @PathVariable String path, Model model) {
+        Team team = teamService.getTeamToUpdate(account, path);
+        model.addAttribute(account);
+        model.addAttribute(team);
+        return "team/settings/team";
+    }
+
+    @PostMapping("/team/publish")
+    public String publishTeam(@CurrentAccount Account account, @PathVariable String path,
+                               RedirectAttributes attributes) {
+        Team team = teamService.getStudyToUpdateStatus(account, path);
+        teamService.publish(team);
+        attributes.addFlashAttribute("message", "팀을 공개했습니다.");
+        return "redirect:/team/" + team.getPath() + "/settings/team";
+    }
+
+    @PostMapping("/team/close")
+    public String closeTeam(@CurrentAccount Account account, @PathVariable String path,
+                               RedirectAttributes attributes) {
+        Team team = teamService.getStudyToUpdateStatus(account, path);
+        teamService.close(team);
+        attributes.addFlashAttribute("message", "팀을 종료했습니다.");
+        return "redirect:/team/" + team.getPath() + "/settings/team";
+    }
+
+    @PostMapping("/recruit/start")
+    public String startRecruit(@CurrentAccount Account account, @PathVariable String path, Model model,
+                               RedirectAttributes attributes) {
+        Team team = teamService.getStudyToUpdateStatus(account, path);
+        if (!team.canUpdateRecruiting()) {
+            attributes.addFlashAttribute("message", "1시간 안에 인원 모집 설정을 여러번 변경할 수 없습니다.");
+            return "redirect:/team/" + getEncodedPath(path) + "/settings/team";
+        }
+
+        teamService.startRecruit(team);
+        attributes.addFlashAttribute("message", "인원 모집을 시작합니다.");
+        return "redirect:/team/" + getEncodedPath(path) + "/settings/team";
+    }
+
+    @PostMapping("/recruit/stop")
+    public String stopRecruit(@CurrentAccount Account account, @PathVariable String path, Model model,
+                              RedirectAttributes attributes) {
+        Team team = teamService.getTeamToUpdate(account, path);
+        if (!team.canUpdateRecruiting()) {
+            attributes.addFlashAttribute("message", "1시간 안에 인원 모집 설정을 여러번 변경할 수 없습니다.");
+            return "redirect:/team/" + getEncodedPath(path) + "/settings/team";
+        }
+
+        teamService.stopRecruit(team);
+        attributes.addFlashAttribute("message", "인원 모집을 종료합니다.");
+        return "redirect:/team/" + getEncodedPath(path) + "/settings/team";
     }
 }

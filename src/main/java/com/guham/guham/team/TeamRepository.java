@@ -17,4 +17,7 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
 
     @EntityGraph(value = "Team.withZonesAndManager", type = EntityGraph.EntityGraphType.FETCH)
     Team findTeamWithZonesByPath(String path);
+
+    @EntityGraph(value = "Team.withManager", type = EntityGraph.EntityGraphType.FETCH)
+    Team findTeamWithManagersByPath(String path);
 }

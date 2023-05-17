@@ -43,7 +43,14 @@ public class TeamService {
         return team;
     }
 
-    private static void checkIfManager(Account account, Team team) {
+    public Team getStudyToUpdateStatus(Account account, String path) {
+        Team team = teamRepository.findTeamWithManagersByPath(path);
+        checkIfManager(account, team);
+        checkIfExistingTeam(team, path);
+        return team;
+    }
+
+    private void checkIfManager(Account account, Team team) {
         if(!account.isManagerOf(team)){
             throw new AccessDeniedException("해당 기능을 사용할 수 없습니다.");
         }
@@ -56,7 +63,7 @@ public class TeamService {
         return team;
     }
 
-    private static void checkIfExistingTeam(Team team, String path) {
+    private void checkIfExistingTeam(Team team, String path) {
         if(team == null){
             throw new IllegalArgumentException(path +"에 해당하는 팀이 없습니다.");
         }
@@ -92,5 +99,23 @@ public class TeamService {
 
     public void removeZone(Team team, Zone zone) {
         team.getZones().remove(zone);
+    }
+
+
+    public void publish(Team team) {
+        team.publish();
+
+    }
+
+    public void close(Team team) {
+        team.close();
+    }
+
+    public void startRecruit(Team team) {
+        team.startRecruit();
+    }
+
+    public void stopRecruit(Team team) {
+        team.stopRecruit();
     }
 }
