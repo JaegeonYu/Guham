@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments :: head"></head>
+<body>
+<nav th:replace="fragments :: main-nav"></nav>
+<div th:replace="fragments :: team-banner"></div>
+<div class="container">
+    <div th:replace="fragments :: team-info"></div>
+    <div th:replace="fragments :: team-menu(teamMenu='settings')"></div>
+    <div class="row mt-3 justify-content-center">
+        <div class="col-2">
+            <div th:replace="fragments :: team-settings-menu(currentMenu='zones')"></div>
+        </div>
+
+        <div class="col-8">
+            <div class="row">
+                <h2 class="col-sm-12">활동 지역</h2>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="alert alert-info" role="alert">
+                        오프라인 팀미팅을 위한 지역을 등록하세요.
+                        시스템에 등록된 지역만 선택할 수 있습니다.
+                    </div>
+                    <div id="whitelist" th:text="${whitelist}" hidden></div>
+                    <input id="zones" type="text" name="zones" th:value="${#strings.listJoin(zones, ',')}"
+                           class="tagify-outside" aria-describedby="tagHelp"/>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:replace="fragments::ajax-csrf-header"></script>
+<script th:replace="fragments::update-zones(baseUrl='/team/' + ${team.path} + '/settings/zones')"></script>
+</body>
+</html>
