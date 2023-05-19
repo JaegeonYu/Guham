@@ -22,8 +22,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,12 +58,9 @@ public class TeamSettingController {
 
         teamService.updateTeamDescription(team, teamDescriptionForm);
         attributes.addFlashAttribute("message", "팀 소개를 수정했습니다.");
-        return "redirect:/team/" + getEncodedPath(path) + "/settings/description";
+        return "redirect:/team/" + team.getEncodedPath() + "/settings/description";
     }
 
-    private String getEncodedPath(String path) {
-        return URLEncoder.encode(path, StandardCharsets.UTF_8);
-    }
 
     @GetMapping("/banner")
     public String viewBannerSetting(@CurrentAccount Account account, @PathVariable String path, Model model) {
@@ -81,22 +76,22 @@ public class TeamSettingController {
         Team team = teamService.getTeamToUpdate(account, path);
         teamService.updateTeamBanner(team, image);
         attributes.addFlashAttribute("message", "팀 배너를 수정했습니다.");
-        return "redirect:/team/" + getEncodedPath(path) + "/settings/banner";
+        return "redirect:/team/" + team.getEncodedPath() + "/settings/banner";
     }
 
 
     @PostMapping("/banner/enable")
     public String enableBanner(@CurrentAccount Account account, @PathVariable String path) {
-        Team team = teamService.getTeamToUpdate(account, path);
+        Team team = teamService.getTeamToUpdateStatus(account, path);
         teamService.enableTeamBanner(team);
-        return "redirect:/team/" + getEncodedPath(path) + "/settings/banner";
+        return "redirect:/team/" + team.getEncodedPath() + "/settings/banner";
     }
 
     @PostMapping("/banner/disable")
     public String disableBanner(@CurrentAccount Account account, @PathVariable String path) {
-        Team team = teamService.getTeamToUpdate(account, path);
+        Team team = teamService.getTeamToUpdateStatus(account, path);
         teamService.disableTeamBanner(team);
-        return "redirect:/team/" + getEncodedPath(path) + "/settings/banner";
+        return "redirect:/team/" + team.getEncodedPath() + "/settings/banner";
     }
 
     @GetMapping("/tags")
@@ -176,7 +171,7 @@ public class TeamSettingController {
     }
 
     @GetMapping("/team")
-    public String studySettingForm(@CurrentAccount Account account, @PathVariable String path, Model model) {
+    public String teamSettingForm(@CurrentAccount Account account, @PathVariable String path, Model model) {
         Team team = teamService.getTeamToUpdate(account, path);
         model.addAttribute(account);
         model.addAttribute(team);
@@ -186,7 +181,7 @@ public class TeamSettingController {
     @PostMapping("/team/publish")
     public String publishTeam(@CurrentAccount Account account, @PathVariable String path,
                                RedirectAttributes attributes) {
-        Team team = teamService.getStudyToUpdateStatus(account, path);
+        Team team = teamService.getTeamToUpdateStatus(account, path);
         teamService.publish(team);
         attributes.addFlashAttribute("message", "팀을 공개했습니다.");
         return "redirect:/team/" + team.getPath() + "/settings/team";
@@ -195,44 +190,44 @@ public class TeamSettingController {
     @PostMapping("/team/close")
     public String closeTeam(@CurrentAccount Account account, @PathVariable String path,
                                RedirectAttributes attributes) {
-        Team team = teamService.getStudyToUpdateStatus(account, path);
+        Team team = teamService.getTeamToUpdateStatus(account, path);
         teamService.close(team);
         attributes.addFlashAttribute("message", "팀을 종료했습니다.");
         return "redirect:/team/" + team.getPath() + "/settings/team";
     }
 
     @PostMapping("/recruit/start")
-    public String startRecruit(@CurrentAccount Account account, @PathVariable String path, Model model,
+    public String startRecruit(@CurrentAccount Account account, @PathVariable String path,
                                RedirectAttributes attributes) {
-        Team team = teamService.getStudyToUpdateStatus(account, path);
+        Team team = teamService.getTeamToUpdateStatus(account, path);
         if (!team.canUpdateRecruiting()) {
             attributes.addFlashAttribute("message", "1시간 안에 인원 모집 설정을 여러번 변경할 수 없습니다.");
-            return "redirect:/team/" + getEncodedPath(path) + "/settings/team";
+            return "redirect:/team/" + team.getEncodedPath() + "/settings/team";
         }
 
         teamService.startRecruit(team);
         attributes.addFlashAttribute("message", "인원 모집을 시작합니다.");
-        return "redirect:/team/" + getEncodedPath(path) + "/settings/team";
+        return "redirect:/team/" + team.getEncodedPath() + "/settings/team";
     }
 
     @PostMapping("/recruit/stop")
-    public String stopRecruit(@CurrentAccount Account account, @PathVariable String path, Model model,
+    public String stopRecruit(@CurrentAccount Account account, @PathVariable String path,
                               RedirectAttributes attributes) {
         Team team = teamService.getTeamToUpdate(account, path);
         if (!team.canUpdateRecruiting()) {
             attributes.addFlashAttribute("message", "1시간 안에 인원 모집 설정을 여러번 변경할 수 없습니다.");
-            return "redirect:/team/" + getEncodedPath(path) + "/settings/team";
+            return "redirect:/team/" + team.getEncodedPath() + "/settings/team";
         }
 
         teamService.stopRecruit(team);
         attributes.addFlashAttribute("message", "인원 모집을 종료합니다.");
-        return "redirect:/team/" + getEncodedPath(path) + "/settings/team";
+        return "redirect:/team/" + team.getEncodedPath() + "/settings/team";
     }
 
     @PostMapping("/team/path")
     public String updateTeamPath(@CurrentAccount Account account, @PathVariable String path, String newPath,
                                   Model model, RedirectAttributes attributes) {
-        Team team = teamService.getStudyToUpdateStatus(account, path);
+        Team team = teamService.getTeamToUpdateStatus(account, path);
         if (!teamService.isValidPath(newPath)) {
             model.addAttribute(account);
             model.addAttribute(team);
@@ -242,13 +237,13 @@ public class TeamSettingController {
 
         teamService.updateStudyPath(team, newPath);
         attributes.addFlashAttribute("message", "팀 경로를 수정했습니다.");
-        return "redirect:/team/" + getEncodedPath(path) + "/settings/team";
+        return "redirect:/team/" + team.getEncodedPath() + "/settings/team";
     }
 
     @PostMapping("/team/title")
     public String updateTeamTitle(@CurrentAccount Account account, @PathVariable String path, String newTitle,
                                    Model model, RedirectAttributes attributes) {
-        Team team = teamService.getStudyToUpdateStatus(account, path);
+        Team team = teamService.getTeamToUpdateStatus(account, path);
         if(!teamService.isValidTitle(newTitle)) {
             model.addAttribute(account);
             model.addAttribute(team);
@@ -258,8 +253,13 @@ public class TeamSettingController {
 
         teamService.updateStudyTitle(team, newTitle);
         attributes.addFlashAttribute("message", "팀 이름을 수정했습니다.");
-        return "redirect:/team/" + getEncodedPath(path) + "/settings/team";
+        return "redirect:/team/" + team.getEncodedPath() + "/settings/team";
     }
 
-
+    @PostMapping("/team/remove")
+    public String removeTeam(@CurrentAccount Account account, @PathVariable String path) {
+        Team team = teamService.getTeamToUpdateStatus(account, path);
+        teamService.remove(team);
+        return "redirect:/";
+    }
 }

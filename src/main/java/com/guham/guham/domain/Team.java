@@ -5,12 +5,15 @@ import com.guham.guham.team.form.TeamDescriptionForm;
 import lombok.*;
 
 import javax.persistence.*;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Getter
+@Setter
 @EqualsAndHashCode(of = "id")
 @Builder
 @AllArgsConstructor
@@ -30,6 +33,9 @@ import java.util.Set;
 })
 @NamedEntityGraph(name = "Team.withManager", attributeNodes = {
         @NamedAttributeNode("managers"),
+})
+@NamedEntityGraph(name = "Team.withMember", attributeNodes = {
+        @NamedAttributeNode("members"),
 })
 public class Team {
     @Id
@@ -85,7 +91,7 @@ public class Team {
     public boolean isJoinable(UserAccount userAccount) {
         Account account = userAccount.getAccount();
         return this.isPublished() && this.isRecruiting()
-                && !this.members.contains(account) && this.managers.contains(account);
+                && !this.members.contains(account) && !this.managers.contains(account);
     }
 
     public boolean isMember(UserAccount userAccount) {
@@ -160,5 +166,21 @@ public class Team {
 
     public void updateTitle(String newTitle) {
         title = newTitle;
+    }
+
+    public boolean isRemovable() {
+        return !this.published;
+    }
+
+    public String getEncodedPath(){
+        return URLEncoder.encode(path, StandardCharsets.UTF_8);
+    }
+
+    public void addMember(Account account) {
+        members.add(account);
+    }
+
+    public void removeMember(Account account) {
+        members.remove(account);
     }
 }

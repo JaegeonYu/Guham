@@ -228,7 +228,7 @@ class SettingsControllerTest {
     }
 
     @Test
-    @DisplayName("태그 수정 - 입력값 정상")
+    @DisplayName("태그 추가 - 입력값 정상")
     @WithAccount("bebe")
     public void updateTags() throws Exception {
         TagForm tagForm = new TagForm();

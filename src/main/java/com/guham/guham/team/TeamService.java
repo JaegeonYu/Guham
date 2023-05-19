@@ -24,7 +24,6 @@ public class TeamService {
 
     public Team getTeamToUpdate(Account account, String path) {
         Team team = this.getTeam(path);
-
         checkIfManager(account, team);
 
         return team;
@@ -43,7 +42,7 @@ public class TeamService {
         return team;
     }
 
-    public Team getStudyToUpdateStatus(Account account, String path) {
+    public Team getTeamToUpdateStatus(Account account, String path) {
         Team team = teamRepository.findTeamWithManagersByPath(path);
         checkIfManager(account, team);
         checkIfExistingTeam(team, path);
@@ -59,7 +58,6 @@ public class TeamService {
     public Team getTeam(String path) {
         Team team = teamRepository.findByPath(path);
         checkIfExistingTeam(team, path);
-
         return team;
     }
 
@@ -139,5 +137,19 @@ public class TeamService {
 
     public void updateStudyTitle(Team team, String newTitle) {
         team.updateTitle(newTitle);
+    }
+
+    public void remove(Team team) {
+        if(team.isRemovable()){
+            teamRepository.delete(team);
+        }else throw new IllegalArgumentException("팀을 삭제할 수 없습니다.");
+    }
+
+    public void addMember(Team team, Account account) {
+        team.addMember(account);
+    }
+
+    public void removeMember(Team team, Account account) {
+        team.removeMember(account);
     }
 }

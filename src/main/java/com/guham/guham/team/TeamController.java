@@ -24,6 +24,7 @@ import java.nio.charset.StandardCharsets;
 public class TeamController {
     private final TeamService teamService;
     private final TeamValidator teamValidator;
+    private final TeamRepository teamRepository;
 
     @InitBinder("teamForm")
     public void initBinder(WebDataBinder webDataBinder){
@@ -63,5 +64,19 @@ public class TeamController {
         model.addAttribute(account);
         model.addAttribute(team);
         return "team/members";
+    }
+
+    @GetMapping("/team/{path}/join")
+    public String joinTeam(@CurrentAccount Account account, @PathVariable String path){
+        Team team = teamRepository.findTeamWithMembersByPath(path);
+        teamService.addMember(team, account);
+        return "redirect:/team/"+team.getEncodedPath()+"/members";
+    }
+
+    @GetMapping("/team/{path}/leave")
+    public String leaveTeam(@CurrentAccount Account account, @PathVariable String path){
+        Team team = teamRepository.findTeamWithMembersByPath(path);
+        teamService.removeMember(team, account);
+        return "redirect:/team/"+team.getEncodedPath()+"/members";
     }
 }
