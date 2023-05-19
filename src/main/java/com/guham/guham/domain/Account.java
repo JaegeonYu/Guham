@@ -111,4 +111,8 @@ public class Account {
     public void updateNickname(String nickname){
         this.nickname = nickname;
     }
+
+    public boolean isManagerOf(Team team) {
+        return team.getManagers().contains(this);
+    }
 }

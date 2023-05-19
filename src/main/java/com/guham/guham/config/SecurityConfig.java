@@ -57,7 +57,7 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer(){
         return web -> {
             web.ignoring()
-                    .mvcMatchers("/node_modules/**")
+                    .mvcMatchers("/node_modules/**", "/favicon.ico",  "/resources/static/**")
                     .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
         };
     }

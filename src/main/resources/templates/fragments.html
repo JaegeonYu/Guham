@@ -4,9 +4,11 @@
 <head th:fragment="head">
   <meta charset="UTF-8">
   <title>Guham</title>
+  <link href="https://fonts.googleapis.com/css?family=Noto+Sans+KR:300,400,500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css"/>
   <link rel="stylesheet" href="/node_modules/font-awesome/css/font-awesome.min.css">
   <link rel="stylesheet" href="/node_modules/@yaireo/tagify/dist/tagify.css">
+  <link rel="stylesheet" href="/node_modules/summernote/dist/summernote-bs4.min.css">
   <script src="/node_modules/jquery/dist/jquery.min.js"></script>
   <script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/node_modules/jdenticon/dist/jdenticon.min.js"></script>
@@ -34,7 +36,7 @@
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item">
-        <form th:action="@{/search/study}" class="form-inline" method="get">
+        <form th:action="@{/search/team}" class="form-inline" method="get">
           <input class="form-control mr-sm-2" name="keyword" type="search" placeholder="팀 찾기" aria-label="Search" />
         </form>
       </li>
@@ -53,7 +55,7 @@
         </a>
       </li>
       <li class="nav-item" sec:authorize="isAuthenticated()">
-        <a class="nav-link btn btn-outline-primary" th:href="@{/notifications}">
+        <a class="nav-link btn btn-outline-primary" th:href="@{/new-team}">
           <i class="fa fa-plus" aria-hidden="true"></i>팀개설</a>
       </li>
       <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
@@ -129,4 +131,256 @@
     });
   });
 </script>
+
+<div th:fragment="team-banner" th:if="${team.useBanner}" class="row" id="team-logo">
+  <img th:src="${team.image}">
+</div>
+
+<div th:fragment="team-info">
+  <div class="row pt-4 text-left justify-content-center bg-light">
+    <div class="col-6">
+      <a href="#" class="text-decoration-none" th:href="@{'/team/' + ${team.path}}">
+        <span class="h2" th:text="${team.title}">스터디 이름</span>
+      </a>
+    </div>
+
+    <div class="col-4 text-right justify-content-end">
+                <span th:if="${!team.published}"
+                      class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom"
+                      title="스터디 공개 준비중">
+                    <button class="btn btn-primary btn-sm" style="pointer-events: none;" type="button" disabled>DRAFT</button>
+                </span>
+      <span th:if="${team.closed}"
+            class="d-inline-block" tabindex="0" data-toggle="tooltip" data-placement="bottom" title="공모전 종료함">
+                    <button class="btn btn-primary btn-sm" style="pointer-events: none;" type="button" disabled>CLOSED</button>
+                </span>
+      <span th:if="${!team.recruiting}"
+            class="d-inline-block ml-1" tabindex="0" data-toggle="tooltip" data-placement="bottom" title="팀원 모집중 아님">
+                    <button class="btn btn-primary btn-sm" style="pointer-events: none;" type="button" disabled>OFF</button>
+                </span>
+      <span sec:authorize="isAuthenticated()" th:if="${team.isJoinable(#authentication.principal)}"
+            class="btn-group" role="group" aria-label="Basic example">
+                    <a class="btn btn-primary" th:href="@{'/team/' + ${team.path} + '/join'}">
+                        팀 가입
+                    </a>
+                    <a class="btn btn-outline-primary" th:href="@{'/team/' + ${team.path} + '/members'}"
+                       th:text="${team.members.size()}">1</a>
+                </span>
+      <span sec:authorize="isAuthenticated()"
+            th:if="${!team.closed && team.isMember(#authentication.principal)}" class="btn-group" role="group">
+                    <a class="btn btn-outline-warning" th:href="@{'/team/' + ${team.path} + '/leave'}">
+                        팀 탈퇴
+                    </a>
+                    <a class="btn btn-outline-primary" th:href="@{'/team/' + ${team.path} + '/members'}"
+                       th:text="${team.members.size()}">1</a>
+                </span>
+      <span sec:authorize="isAuthenticated()"
+            th:if="${team.published && !team.closed && team.isManager(#authentication.principal)}">
+                    <a class="btn btn-outline-primary" th:href="@{'/team/' + ${team.path} + '/new-event'}">
+                        <i class="fa fa-plus"></i> 모임 만들기
+                    </a>
+                </span>
+    </div>
+  </div>
+  <div class="row justify-content-center bg-light">
+    <div class="col-10">
+      <p class="lead" th:text="${team.shortDescription}"></p>
+    </div>
+  </div>
+
+  <div class="row justify-content-center bg-light">
+    <div class="col-10">
+      <p>
+            <span th:each="tag: ${team.tags}"
+                  class="font-weight-light text-monospace badge badge-pill badge-info mr-3">
+                <a th:href="@{'/search/tag/' + ${tag.title}}" class="text-decoration-none text-white">
+                    <i class="fa fa-tag"></i> <span th:text="${tag.title}">Tag</span>
+                </a>
+            </span>
+        <span th:each="zone: ${team.zones}" class="font-weight-light text-monospace badge badge-primary mr-3">
+                <a th:href="@{'/search/zone/' + ${zone.id}}" class="text-decoration-none text-white">
+                    <i class="fa fa-globe"></i> <span th:text="${zone.localNameOfCity}">City</span>
+                </a>
+          </span>
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<div th:fragment="team-menu(teamMenu)" class="row px-3 justify-content-center bg-light">
+    <nav class="col-10 nav nav-tabs">
+        <a class="nav-item nav-link" href="#" th:classappend="${teamMenu == 'info'}? active" th:href="@{'/team/' + ${team.path}}">
+            <i class="fa fa-info-circle"></i> 소개
+        </a>
+        <a class="nav-item nav-link" href="#" th:classappend="${teamMenu == 'members'}? active" th:href="@{'/team/' + ${team.path} + '/members'}">
+            <i class="fa fa-user"></i> 구성원
+        </a>
+        <a class="nav-item nav-link" th:classappend="${teamMenu == 'events'}? active" href="#" th:href="@{'/team/' + ${team.path} + '/events'}">
+            <i class="fa fa-calendar"></i> 모임
+        </a>
+        <a sec:authorize="isAuthenticated()" th:if="${team.isManager(#authentication.principal)}"
+           class="nav-item nav-link" th:classappend="${teamMenu == 'settings'}? active" href="#" th:href="@{'/team/' + ${team.path} + '/settings/description'}">
+            <i class="fa fa-cog"></i> 설정
+        </a>
+    </nav>
+</div>
+
+<div th:fragment="member-list (members, isManager)" class="row px-3 justify-content-center">
+    <ul class="list-unstyled col-10">
+        <li class="media mt-3" th:each="member: ${members}">
+            <svg th:if="${#strings.isEmpty(member?.profileImage)}" th:data-jdenticon-value="${member.nickname}" width="64" height="64" class="rounded border bg-light mr-3"></svg>
+            <img th:if="${!#strings.isEmpty(member?.profileImage)}" th:src="${member?.profileImage}" width="64" height="64" class="rounded border mr-3"/>
+            <div class="media-body">
+                <h5 class="mt-0 mb-1"><span th:text="${member.nickname}"></span> <span th:if="${isManager}" class="badge badge-primary">관리자</span></h5>
+                <span th:text="${member.bio}"></span>
+            </div>
+        </li>
+    </ul>
+</div>
+
+<div th:fragment="team-settings-menu (currentMenu)" class="list-group">
+    <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'description'}? active"
+       href="#" th:href="@{'/team/' + ${team.path} + '/settings/description'}">소개</a>
+    <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'banner'}? active"
+       href="#" th:href="@{'/team/' + ${team.path} + '/settings/banner'}">배너 이미지</a>
+    <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'tags'}? active"
+       href="#" th:href="@{'/team/' + ${team.path} + '/settings/tags'}">팀 공모전 주제</a>
+    <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'zones'}? active"
+       href="#" th:href="@{'/team/' + ${team.path} + '/settings/zones'}">활동 지역</a>
+    <a class="list-group-item list-group-item-action list-group-item-danger" th:classappend="${currentMenu == 'team'}? active"
+       href="#" th:href="@{'/team/' + ${team.path} + '/settings/team'}">팀</a>
+</div>
+
+<div th:fragment="editor-script">
+    <script src="/node_modules/summernote/dist/summernote-bs4.js"></script>
+    <script type="application/javascript">
+        $(function () {
+            $('.editor').summernote({
+                fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', 'Noto Sans KR', 'Merriweather'],
+                placeholder: '스터디의 목표, 일정, 진행 방식, 사용할 교재 또는 인터넷 강좌 그리고 모집중인 스터디원 등 스터디에 대해 자세히 적어 주세요.',
+                tabsize: 2,
+                height: 300
+            });
+        });
+    </script>
+</div>
+
+<script th:fragment="tooltip" type="application/javascript">
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+</script>
+
+
+
+<div th:fragment="message" th:if="${message}" class="alert alert-info alert-dismissible fade show mt-3" role="alert">
+    <span th:text="${message}">완료</span>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<script th:fragment="ajax-csrf-header" type="application/javascript" th:inline="javascript">
+    $(function () {
+        var csrfToken = /*[[${_csrf.token}]]*/ null;
+        var csrfHeader = /*[[${_csrf.headerName}]]*/ null;
+        $(document).ajaxSend(function (e, xhr, options) {
+            xhr.setRequestHeader(csrfHeader, csrfToken);
+        });
+    });
+</script>
+
+<div th:fragment="update-tags(baseUrl)">
+    <script src="/node_modules/@yaireo/tagify/dist/tagify.min.js"></script>
+    <script type="application/javascript" th:inline="javascript">
+        $(function() {
+            function tagRequest(url, tagTitle) {
+                $.ajax({
+                    dataType: "json",
+                    autocomplete: {
+                        enabled: true,
+                        rightKey: true,
+                    },
+                    contentType: "application/json; charset=utf-8",
+                    method: "POST",
+                    url: "[(${baseUrl})]" + url,
+                    data: JSON.stringify({'tagTitle': tagTitle})
+                }).done(function (data, status) {
+                    console.log("${data} and status is ${status}");
+                });
+            }
+
+            function onAdd(e) {
+                tagRequest("/add", e.detail.data.value);
+            }
+
+            function onRemove(e) {
+                tagRequest("/remove", e.detail.data.value);
+            }
+
+            var tagInput = document.querySelector("#tags");
+            var tagify = new Tagify(tagInput, {
+                pattern : /^.{0,20}$/,
+                whitelist : JSON.parse(document.querySelector("#whitelist").textContent),
+                dropdown : {
+                    enabled: 1, // suggest tags after a single character input
+                }, // map tags
+            });
+            tagify.on("add", onAdd);
+            tagify.on("remove", onRemove);
+            // add a class to Tagify's input element
+            tagify.DOM.input.classList.add('form-control');
+            // re-place Tagify's input element outside of the  element (tagify.DOM.scope), just before it
+            tagify.DOM.scope.parentNode.insertBefore(tagify.DOM.input, tagify.DOM.scope);
+        });
+    </script>
+</div>
+
+<div th:fragment="update-zones(baseUrl)">
+    <script src="/node_modules/@yaireo/tagify/dist/tagify.min.js"></script>
+    <script type="application/javascript" th:inline="javascript">
+        $(function() {
+            function tagRequest(url, zoneName) {
+                $.ajax({
+                    dataType: "json",
+                    autocomplete: {
+                        enabled: true,
+                        rightKey: true,
+                    },
+                    contentType: "application/json; charset=utf-8",
+                    method: "POST",
+                    url: "[(${baseUrl})]" + url,
+                    data: JSON.stringify({'zoneName': zoneName})
+                }).done(function (data, status) {
+                    console.log("${data} and status is ${status}");
+                });
+            }
+
+            function onAdd(e) {
+                tagRequest("/add", e.detail.data.value);
+            }
+
+            function onRemove(e) {
+                tagRequest("/remove", e.detail.data.value);
+            }
+
+            var tagInput = document.querySelector("#zones");
+            var tagify = new Tagify(tagInput, {
+                enforceWhitelist : true,
+                whitelist : JSON.parse(document.querySelector("#whitelist").textContent),
+                dropdown : {
+                    enabled: 1, // suggest tags after a single character input
+                    position: "text",
+                }, // map tags
+            });
+            tagify.on("add", onAdd);
+            tagify.on("remove", onRemove);
+            // add a class to Tagify's input element
+            tagify.DOM.input.classList.add('form-control');
+            // re-place Tagify's input element outside of the  element (tagify.DOM.scope), just before it
+            tagify.DOM.scope.parentNode.insertBefore(tagify.DOM.input, tagify.DOM.scope);
+        });
+    </script>
+</div>
 </html>

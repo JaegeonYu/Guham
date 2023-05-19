@@ -11,6 +11,7 @@ import com.guham.guham.settings.form.*;
 import com.guham.guham.settings.validator.NicknameFormValidator;
 import com.guham.guham.settings.validator.PasswordFormValidator;
 import com.guham.guham.tag.TagRepository;
+import com.guham.guham.tag.TagService;
 import com.guham.guham.zone.ZoneRepository;
 import com.guham.guham.zone.ZoneService;
 import lombok.RequiredArgsConstructor;
@@ -45,12 +46,13 @@ public class SettingsController {
     static final String ZONES = "/zones";
 
     private final AccountService accountService;
-    private final ZoneService zoneService;
-    private final NicknameFormValidator nicknameFormValidator;
+    private final TagService tagService;
+
     private final TagRepository tagRepository;
     private final ObjectMapper objectMapper;
     private final ZoneRepository zoneRepository;
 
+    private final NicknameFormValidator nicknameFormValidator;
 
     @InitBinder("passwordForm")
     public void initBinderPassword(WebDataBinder webDataBinder) {
@@ -162,13 +164,7 @@ public class SettingsController {
     @ResponseBody
     public ResponseEntity updateTags(@CurrentAccount Account account, @RequestBody TagForm tagForm) {
         String tagTitle = tagForm.getTagTitle();
-        Tag tag = tagRepository.findByTitle(tagTitle);
-        if (tag == null) {
-            tag = tagRepository.save(Tag.builder()
-                    .title(tagTitle)
-                    .build());
-        }
-
+        Tag tag = tagService.findOrCreate(tagTitle);
         accountService.addTag(account.getId(), tag);
         return ResponseEntity.ok().build();
     }

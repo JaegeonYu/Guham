@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head th:replace="fragments::head">
+</head>
+<body class="bg-light">
+<div th:replace="fragments::main-nav"></div>
+
+<div th:replace="fragments::team-banner"></div>
+
+<div class="container">
+  <div th:replace="fragments::team-info"></div>
+  <div th:replace="fragments::team-menu(teamMenu=='members')"></div>
+
+  <div th:replace="fragments::member-list(members=${team.managers}, isManager=${true})"></div>
+  <div th:replace="fragments::member-list(members=${team.members}, isManager=${false})"></div>
+
+  <div th:replace="fragments::footer"></div>
+</div>
+<script type="application/javascript">
+  $(function(){
+    $('[data-toggle="tooltip"]').tooltip()
+  })
+</script>
+<script th:replace="fragments::form-validation"></script>
+
+</body>
+</html>

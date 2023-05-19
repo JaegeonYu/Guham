@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head th:replace="fragments::head">
+</head>
+<body class="bg-light">
+<div th:replace="fragments::main-nav" ></div>
+
+<div class="container">
+  <div class="py-5 text-center">
+    <h2>팀 만들기</h2>
+  </div>
+  <div class="row justify-content-center">
+    <form class="need-validation col-sm-10" action="#"
+    th:action="@{/new-team}" th:object="${teamForm}" method="post" novalidate>
+      <div class="form-group">
+        <label for="path">팀 URL</label>
+        <input id="path" type="text" th:field="*{path}" class="form-control"
+               placeholder="예) team-path" aria-describedby="pathHelp" required min="2" max="20">
+        <small id="pathHelp" class="form-text text-muted">
+          공백없이 문자, 숫자, 대시(-)와 언더바(_)만 2자 이상 20자 이내로 입력하세요. 팀 홈 주소에 사용합니다. 예) /team/<b>team-path</b>
+        </small>
+        <small class="invalid-feedback">스터디 경로를 입력하세요.</small>
+        <small class="form-text text-danger" th:if="${#fields.hasErrors('path')}" th:errors="*{path}">Path Error</small>
+      </div>
+
+      <div class="form-group">
+        <label for="title">팀 이름</label>
+        <input id="title" type="text" th:field="*{title}" class="form-control"
+               placeholder="스터디 이름" aria-describedby="titleHelp" required max="50">
+        <small id="titleHelp" class="form-text text-muted">
+          팀 이름을 50자 이내로 입력하세요.
+        </small>
+        <small class="invalid-feedback">팀 이름을 입력하세요.</small>
+        <small class="form-text text-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">Title Error</small>
+      </div>
+
+      <div class="form-group">
+        <label for="shortDescription">짧은 소개</label>
+        <textarea id="shortDescription" type="textarea" th:field="*{shortDescription}" class="form-control"
+                  placeholder="스터디를 짧게 소개해 주세요." aria-describedby="shortDescriptionHelp" required maxlength="100"></textarea>
+        <small id="shortDescriptionHelp" class="form-text text-muted">
+          100자 이내로 팀의 짧은 소개해 주세요.
+        </small>
+        <small class="invalid-feedback">짧은 소개를 입력하세요.</small>
+        <small class="form-text text-danger" th:if="${#fields.hasErrors('shortDescription')}" th:errors="*{shortDescription}">ShortDescription Error</small>
+      </div>
+
+      <div class="form-group">
+        <label for="fullDescription">상세 소개</label>
+        <textarea id="fullDescription" type="textarea" th:field="*{fullDescription}" class="editor form-control"
+                  placeholder="스터디를 자세히 설명해 주세요." aria-describedby="fullDescriptionHelp" required></textarea>
+        <small id="fullDescriptionHelp" class="form-text text-muted">
+          팀의 목표 공모전, 일정, 진행 방식 그리고 모집중인 팀원 등 팀에 대해 자세히 적어 주세요.
+        </small>
+        <small class="invalid-feedback">상세 소개를 입력하세요.</small>
+        <small class="form-text text-danger" th:if="${#fields.hasErrors('fullDescription')}" th:errors="*{fullDescription}">FullDescription Error</small>
+      </div>
+
+      <div class="form-group">
+        <button class="btn btn-primary btn-block" type="submit"
+                aria-describedby="submitHelp">팀 만들기</button>
+      </div>
+
+    </form>
+  </div>
+
+  <div th:replace="fragments::footer"></div>
+</div>
+<scirpt th:replace="fragments :: form-validation"></scirpt>
+<script th:replace="fragments :: editor-script"></script>
+</body>
+</html>
