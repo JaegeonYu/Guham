@@ -1,5 +1,6 @@
 package com.guham.guham.event.form;
 
+import com.guham.guham.domain.Event;
 import com.guham.guham.domain.EventType;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
@@ -27,4 +28,15 @@ public class EventForm {
     private LocalDateTime endDateTime;
     @Min(2)
     private Integer limitOfEnrollments = 2;
+
+    public Event getEvent(){
+        return Event.builder()
+                .title(title)
+                .description(description)
+                .endEnrollmentDateTime(endEnrollmentDateTime)
+                .startDateTime(startDateTime)
+                .endDateTime(endDateTime)
+                .limitOfEnrollments(limitOfEnrollments)
+                .build();
+    }
 }
