@@ -15,6 +15,9 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @RequestMapping("/team/{path}")
@@ -62,5 +65,26 @@ public class EventController {
         model.addAttribute(eventRepository.findById(id).orElseThrow());
         model.addAttribute(teamService.getTeam(path));
         return "event/view";
+    }
+
+    @GetMapping("/events")
+    public String getTeamEvents(@CurrentAccount Account account, @PathVariable String path, Model model) {
+        Team team = teamService.getTeam(path);
+
+        model.addAttribute(account);
+        model.addAttribute(team);
+
+        List<Event> events = eventRepository.findByTeamOrderByStartDateTime(team);
+        List<Event> newEvents =new ArrayList<>();
+        List<Event> oldEvents =new ArrayList<>();
+        events.forEach(e -> {
+            if(e.getEndDateTime().isBefore(LocalDateTime.now())){
+                oldEvents.add(e);
+            }else newEvents.add(e);
+        });
+
+        model.addAttribute("newEvents", newEvents);
+        model.addAttribute("oldEvents", oldEvents);
+        return "team/events";
     }
 }

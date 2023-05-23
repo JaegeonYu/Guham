@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,6 +13,8 @@ import java.util.List;
 @Getter
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
+@NamedEntityGraph(name = "Event.withEnrollments",
+        attributeNodes = @NamedAttributeNode("enrollments"))
 public class Event {
     @Id
     @GeneratedValue
@@ -84,6 +85,10 @@ public class Event {
         }
 
         return false;
+    }
+
+    public int numberOfRemainSpots() {
+        return this.limitOfEnrollments - (int) this.enrollments.stream().filter(Enrollment::isAccepted).count();
     }
 
     public void create(Account account, Team team) {
