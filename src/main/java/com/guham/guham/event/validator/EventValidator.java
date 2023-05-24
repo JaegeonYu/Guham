@@ -1,5 +1,6 @@
 package com.guham.guham.event.validator;
 
+import com.guham.guham.domain.Event;
 import com.guham.guham.event.form.EventForm;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -41,5 +42,11 @@ public class EventValidator implements Validator {
 
     private boolean isNotValidateEndEnrollmentDateTime(EventForm event) {
         return event.getEndEnrollmentDateTime().isBefore(LocalDateTime.now());
+    }
+
+    public void validateUpdateForm(EventForm eventForm, Event event, Errors errors) {
+        if (eventForm.getLimitOfEnrollments() < event.getNumberOfAcceptedEnrollments()) {
+            errors.rejectValue("limitOfEnrollments", "wrong.value", "확인된 참기 신청보다 모집 인원 수가 커야 합니다.");
+        }
     }
 }

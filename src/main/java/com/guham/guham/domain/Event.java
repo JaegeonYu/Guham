@@ -1,6 +1,7 @@
 package com.guham.guham.domain;
 
 import com.guham.guham.account.UserAccount;
+import com.guham.guham.event.form.EventForm;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -95,5 +96,19 @@ public class Event {
         this.createdBy = account;
         this.team = team;
         this.createdDateTime = LocalDateTime.now();
+    }
+
+    public long getNumberOfAcceptedEnrollments() {
+        return this.enrollments.stream().filter(Enrollment::isAccepted).count();
+    }
+
+    public void update(EventForm eventForm){
+        title = eventForm.getTitle();
+        description = eventForm.getDescription();
+        eventType = eventForm.getEventType();
+        startDateTime = eventForm.getStartDateTime();
+        endDateTime = eventForm.getEndDateTime();
+        endEnrollmentDateTime = eventForm.getEndEnrollmentDateTime();
+        limitOfEnrollments = eventForm.getLimitOfEnrollments();
     }
 }

@@ -87,4 +87,37 @@ public class EventController {
         model.addAttribute("oldEvents", oldEvents);
         return "team/events";
     }
+
+    @GetMapping("/events/{id}/edit")
+    public String updateEventForm(@CurrentAccount Account account,
+                                  @PathVariable String path, @PathVariable Long id, Model model) {
+        Team team = teamService.getTeamToUpdate(account, path);
+        Event event = eventRepository.findById(id).orElseThrow();
+        model.addAttribute(team);
+        model.addAttribute(account);
+        model.addAttribute(event);
+        model.addAttribute(new EventForm(event));
+        return "event/update-form";
+    }
+
+    @PostMapping("/events/{id}/edit")
+    public String updateEventSubmit(@CurrentAccount Account account, @PathVariable String path,
+                                    @PathVariable Long id, @Valid EventForm eventForm, Errors errors,
+                                    Model model) {
+        Team team = teamService.getTeamToUpdate(account, path);
+        Event event = eventRepository.findById(id).orElseThrow();
+
+        eventForm.setEventType(event.getEventType());
+        eventValidator.validateUpdateForm(eventForm, event, errors);
+
+        if (errors.hasErrors()) {
+            model.addAttribute(account);
+            model.addAttribute(team);
+            model.addAttribute(event);
+            return "event/update-form";
+        }
+
+        eventService.updateEvent(event, eventForm);
+        return "redirect:/team/" + team.getEncodedPath() +  "/events/" + event.getId();
+    }
 }

@@ -3,6 +3,7 @@ package com.guham.guham.event.form;
 import com.guham.guham.domain.Event;
 import com.guham.guham.domain.EventType;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -11,6 +12,7 @@ import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
 @Data
+@NoArgsConstructor
 public class EventForm {
     @NotBlank
     @Length(max = 50)
@@ -38,5 +40,15 @@ public class EventForm {
                 .endDateTime(endDateTime)
                 .limitOfEnrollments(limitOfEnrollments)
                 .build();
+    }
+
+    public EventForm(Event event) {
+        title = event.getTitle();
+        description = event.getDescription();
+        eventType = event.getEventType();
+        startDateTime = event.getStartDateTime();
+        endDateTime = event.getEndDateTime();
+        endEnrollmentDateTime = event.getEndEnrollmentDateTime();
+        limitOfEnrollments = event.getLimitOfEnrollments();
     }
 }
