@@ -21,4 +21,8 @@ public class EventService {
     public void updateEvent(Event event, EventForm eventForm) {
         event.update(eventForm);
     }
+
+    public void deleteEvent(Event event) {
+        eventRepository.delete(event);
+    }
 }

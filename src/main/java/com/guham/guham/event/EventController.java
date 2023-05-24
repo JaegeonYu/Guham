@@ -120,4 +120,12 @@ public class EventController {
         eventService.updateEvent(event, eventForm);
         return "redirect:/team/" + team.getEncodedPath() +  "/events/" + event.getId();
     }
+
+    @DeleteMapping("/events/{id}")
+    public String cancelEvent(@CurrentAccount Account account, @PathVariable String path, @PathVariable Long id) {
+        Team team = teamService.getTeamToUpdateStatus(account, path);
+        Event event = eventRepository.findById(id).orElseThrow();
+        eventService.deleteEvent(event);
+        return "redirect:/team/" + team.getEncodedPath() + "/events";
+    }
 }
