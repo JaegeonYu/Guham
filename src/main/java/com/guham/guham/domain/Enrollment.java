@@ -2,6 +2,7 @@ package com.guham.guham.domain;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Setter
 @EqualsAndHashCode(of = "id")
 public class Enrollment {
     @Id @GeneratedValue

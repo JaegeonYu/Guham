@@ -128,4 +128,20 @@ public class EventController {
         eventService.deleteEvent(event);
         return "redirect:/team/" + team.getEncodedPath() + "/events";
     }
+
+    @PostMapping("/events/{id}/enroll")
+    public String newEnrollment(@CurrentAccount Account account,
+                                @PathVariable String path, @PathVariable("id") Event event) {
+        Team team = teamService.getTeamToEnroll(path);
+        eventService.newEnrollment(event, account);
+        return "redirect:/team/" + team.getEncodedPath() + "/events/" + event.getId();
+    }
+
+    @PostMapping("/events/{id}/disenroll")
+    public String cancelEnrollment(@CurrentAccount Account account,
+                                   @PathVariable String path, @PathVariable("id") Event event) {
+        Team team = teamService.getTeamToEnroll(path);
+        eventService.cancelEnrollment(event, account);
+        return "redirect:/team/" + team.getEncodedPath() + "/events/" + event.getId();
+    }
 }

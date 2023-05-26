@@ -152,4 +152,10 @@ public class TeamService {
     public void removeMember(Team team, Account account) {
         team.removeMember(account);
     }
+
+    public Team getTeamToEnroll(String path) {
+        Team team = teamRepository.findTeamOnlyByPath(path);
+        checkIfExistingTeam(team, path);
+        return team;
+    }
 }

@@ -3,13 +3,13 @@
 <head th:replace="fragments::head">
 </head>
 <body class="bg-light">
-    <div th:replace="fragments :: main-nav" ></div>
-    <div th:replace="fragments :: team-banner"></div>
-    <div class="container">
-        <div th:replcae="fragments :: event-form(mode='new', action='/team/' + ${team.path} + '/new-event/')"></div>
-        <div th:replace="fragments :: footer"></div>
-    </div>
-    <script th:replace="fragments :: form-validation"></script>
-    <script th:replace="fragments :: editor-script"></script>
+<div th:replace="fragments :: main-nav"></div>
+<div th:replace="fragments :: team-banner"></div>
+<div class="container">
+    <div th:replace="fragments.html :: event-form (mode='new', action='/team/' + ${team.path} + '/new-event/')"></div>
+    <div th:replace="fragments :: footer"></div>
+</div>
+<script th:replace="fragments :: form-validation"></script>
+<script th:replace="fragments :: editor-script"></script>
 </body>
 </html>

@@ -25,4 +25,6 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
     Team findTeamWithMembersByPath(String path);
 
     boolean existsByTitle(String title);
+
+    Team findTeamOnlyByPath(String path);
 }

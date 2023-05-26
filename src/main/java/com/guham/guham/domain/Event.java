@@ -2,16 +2,16 @@ package com.guham.guham.domain;
 
 import com.guham.guham.account.UserAccount;
 import com.guham.guham.event.form.EventForm;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @NamedEntityGraph(name = "Event.withEnrollments",
@@ -52,7 +52,7 @@ public class Event {
     private int limitOfEnrollments;
 
     @OneToMany(mappedBy = "event")
-    private List<Enrollment> enrollments;
+    private List<Enrollment> enrollments = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private EventType eventType;
@@ -110,5 +110,51 @@ public class Event {
         endDateTime = eventForm.getEndDateTime();
         endEnrollmentDateTime = eventForm.getEndEnrollmentDateTime();
         limitOfEnrollments = eventForm.getLimitOfEnrollments();
+    }
+
+    public boolean isAbleToAcceptWaitingEnrollment() {
+        return this.eventType == EventType.FCFS && this.limitOfEnrollments > this.getNumberOfAcceptedEnrollments();
+    }
+
+    public void addEnrollment(Enrollment enrollment) {
+        this.enrollments.add(enrollment);
+        enrollment.setEvent(this);
+    }
+
+    public void removeEnrollment(Enrollment enrollment) {
+        this.enrollments.remove(enrollment);
+        enrollment.setEvent(null);
+    }
+
+    public void acceptNextWaitingEnrollment() {
+        if(this.isAbleToAcceptWaitingEnrollment()){
+            Enrollment enrollmentToAccept = this.getTheFirstWaitingEnrollment();
+            if(enrollmentToAccept != null){
+                enrollmentToAccept.setAccepted(true);
+            }
+        }
+    }
+
+    private Enrollment getTheFirstWaitingEnrollment() {
+        for(Enrollment e : this.enrollments)
+            if(!e.isAccepted()){
+                return e;
+            }
+        return null;
+    }
+
+    public boolean canAccept(Enrollment enrollment) {
+        return this.eventType == EventType.CONFIRMATIVE
+                && this.enrollments.contains(enrollment)
+                && this.limitOfEnrollments > this.getNumberOfAcceptedEnrollments()
+                && !enrollment.isAttended()
+                && !enrollment.isAccepted();
+    }
+
+    public boolean canReject(Enrollment enrollment) {
+        return this.eventType == EventType.CONFIRMATIVE
+                && this.enrollments.contains(enrollment)
+                && !enrollment.isAttended()
+                && enrollment.isAccepted();
     }
 }
