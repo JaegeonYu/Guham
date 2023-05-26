@@ -38,6 +38,7 @@ public class EventForm {
                 .endEnrollmentDateTime(endEnrollmentDateTime)
                 .startDateTime(startDateTime)
                 .endDateTime(endDateTime)
+                .eventType(eventType)
                 .limitOfEnrollments(limitOfEnrollments)
                 .build();
     }

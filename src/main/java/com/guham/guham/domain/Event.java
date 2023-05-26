@@ -27,12 +27,13 @@ public class Event {
     private Account createdBy;
 
     @Builder
-    public Event(String title, String description, LocalDateTime endEnrollmentDateTime, LocalDateTime startDateTime, LocalDateTime endDateTime, int limitOfEnrollments) {
+    public Event(String title, String description, LocalDateTime endEnrollmentDateTime, LocalDateTime startDateTime, LocalDateTime endDateTime, EventType eventType, int limitOfEnrollments) {
         this.title = title;
         this.description = description;
         this.endEnrollmentDateTime = endEnrollmentDateTime;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
+        this.eventType = eventType;
         this.limitOfEnrollments = limitOfEnrollments;
     }
 
@@ -58,11 +59,17 @@ public class Event {
     private EventType eventType;
 
     public boolean isEnrollableFor(UserAccount userAccount) {
-        return isNotClosed() && !isAlreadyEnrolled(userAccount);
+        System.out.println("enrollFor :"+(isNotClosed() && !isAttended(userAccount)
+                && !isAlreadyEnrolled(userAccount)));
+        return isNotClosed() && !isAttended(userAccount)
+                && !isAlreadyEnrolled(userAccount);
     }
 
     public boolean isDisenrollableFor(UserAccount userAccount) {
-        return isNotClosed() && isAlreadyEnrolled(userAccount);
+        System.out.println("DisenrollFor :"+(isNotClosed() && !isAttended(userAccount)
+                && isAlreadyEnrolled(userAccount)));
+        return isNotClosed() && !isAttended(userAccount)
+                && isAlreadyEnrolled(userAccount);
     }
 
     private boolean isNotClosed() {
@@ -156,5 +163,17 @@ public class Event {
                 && this.enrollments.contains(enrollment)
                 && !enrollment.isAttended()
                 && enrollment.isAccepted();
+    }
+
+    public void accept(Enrollment enrollment) {
+        if(this.eventType == EventType.CONFIRMATIVE && this.limitOfEnrollments > this.getNumberOfAcceptedEnrollments()){
+            enrollment.setAccepted(true);
+        }
+    }
+
+    public void reject(Enrollment enrollment) {
+        if (this.eventType == EventType.CONFIRMATIVE) {
+            enrollment.setAccepted(false);
+        }
     }
 }

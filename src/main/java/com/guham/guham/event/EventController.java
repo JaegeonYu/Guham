@@ -2,6 +2,7 @@ package com.guham.guham.event;
 
 import com.guham.guham.account.CurrentAccount;
 import com.guham.guham.domain.Account;
+import com.guham.guham.domain.Enrollment;
 import com.guham.guham.domain.Event;
 import com.guham.guham.domain.Team;
 import com.guham.guham.event.form.EventForm;
@@ -144,4 +145,37 @@ public class EventController {
         eventService.cancelEnrollment(event, account);
         return "redirect:/team/" + team.getEncodedPath() + "/events/" + event.getId();
     }
+
+    @GetMapping("events/{eventId}/enrollments/{enrollmentId}/accept")
+    public String acceptEnrollment(@CurrentAccount Account account, @PathVariable String path,
+                                   @PathVariable("eventId") Event event, @PathVariable("enrollmentId") Enrollment enrollment) {
+        Team team = teamService.getTeamToUpdate(account, path);
+        eventService.acceptEnrollment(event, enrollment);
+        return "redirect:/team/" + team.getEncodedPath() + "/events/" + event.getId();
+    }
+
+    @GetMapping("/events/{eventId}/enrollments/{enrollmentId}/reject")
+    public String rejectEnrollment(@CurrentAccount Account account, @PathVariable String path,
+                                   @PathVariable("eventId") Event event, @PathVariable("enrollmentId") Enrollment enrollment) {
+        Team team = teamService.getTeamToUpdate(account, path);
+        eventService.rejectEnrollment(event, enrollment);
+        return "redirect:/team/" + team.getEncodedPath() + "/events/" + event.getId();
+    }
+
+    @GetMapping("/events/{eventId}/enrollments/{enrollmentId}/checkin")
+    public String checkInEnrollment(@CurrentAccount Account account, @PathVariable String path,
+                                    @PathVariable("eventId") Event event, @PathVariable("enrollmentId") Enrollment enrollment) {
+        Team team = teamService.getTeamToUpdate(account, path);
+        eventService.checkInEnrollment(enrollment);
+        return "redirect:/team/" + team.getEncodedPath() + "/events/" + event.getId();
+    }
+
+    @GetMapping("/events/{eventId}/enrollments/{enrollmentId}/cancel-checkin")
+    public String cancelCheckEnrollment(@CurrentAccount Account account, @PathVariable String path,
+                                    @PathVariable("eventId") Event event, @PathVariable("enrollmentId") Enrollment enrollment) {
+        Team team = teamService.getTeamToUpdate(account, path);
+        eventService.cancelCheckInEnrollment(enrollment);
+        return "redirect:/team/" + team.getEncodedPath() + "/events/" + event.getId();
+    }
+
 }
