@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head th:replace="fragments::head">
+</head>
+<body class="bg-light">
+<div th:replace="fragments :: main-nav" ></div>
+<div th:replace="fragments :: team-banner"></div>
+<div class="container">
+
+  <div th:replace="fragments :: event-form (mode='edit', action='/team/' +
+  ${team.path} + '/events/' + ${event.id} + '/edit')"></div>
+  <div th:replace="fragments :: footer"></div>
+</div>
+<script th:replace="fragments :: form-validation"></script>
+<script th:replace="fragments :: editor-script"></script>
+</body>
+</html>

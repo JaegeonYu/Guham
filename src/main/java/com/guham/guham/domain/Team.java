@@ -13,7 +13,6 @@ import java.util.Set;
 
 @Entity
 @Getter
-@Setter
 @EqualsAndHashCode(of = "id")
 @Builder
 @AllArgsConstructor
@@ -81,7 +80,8 @@ public class Team {
 
     private boolean closed;
 
-    private boolean useBanner;
+    @Builder.Default
+    private boolean useBanner = false;
 
 
     public void addManager(Account account) {
