@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @EqualsAndHashCode(of = "id")
-
 public class Notification {
     @Id
     @GeneratedValue
@@ -24,7 +23,7 @@ public class Notification {
     private boolean checked;
     @ManyToOne
     private Account account;
-    private LocalDateTime createdLocalDateTime;
+    private LocalDateTime createdDateTime;
     @Enumerated(EnumType.STRING)
     private NotificationType notificationType;
 }

@@ -21,7 +21,6 @@ public class TeamService {
     public Team createTeam(Team team, Account account) {
         Team newTeam = teamRepository.save(team);
         newTeam.addManager(account);
-        eventPublisher.publishEvent(new TeamCreatedEvent(newTeam));
         return newTeam;
     }
 
@@ -105,7 +104,7 @@ public class TeamService {
 
     public void publish(Team team) {
         team.publish();
-
+        eventPublisher.publishEvent(new TeamCreatedEvent(team));
     }
 
     public void close(Team team) {

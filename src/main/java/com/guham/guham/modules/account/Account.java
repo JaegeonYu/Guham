@@ -52,17 +52,17 @@ public class Account {
     @Basic(fetch = FetchType.EAGER)
     private String profileImage; // HTML DATA URL
 
-    private boolean studyCreatedByEmail;
+    private boolean teamCreatedByEmail;
 
-    private boolean studyCreatedByWeb = true;
+    private boolean teamCreatedByWeb = true;
 
-    private boolean studyEnrollmentResultByEmail;
+    private boolean teamEnrollmentResultByEmail;
 
-    private boolean studyEnrollmentResultByWeb = true;
+    private boolean teamEnrollmentResultByWeb = true;
 
-    private boolean studyUpdatedByEmail;
+    private boolean teamUpdatedByEmail;
 
-    private boolean studyUpdatedByWeb = true;
+    private boolean teamUpdatedByWeb = true;
     private LocalDateTime emailCheckTokenGeneratedAt;
 
     @ManyToMany
@@ -102,12 +102,12 @@ public class Account {
     }
 
     public void updateNotifications(Notifications notifications) {
-        this.studyCreatedByWeb = notifications.isStudyCreatedByWeb();
-        this.studyCreatedByEmail = notifications.isStudyCreatedByEmail();
-        this.studyEnrollmentResultByWeb = notifications.isStudyEnrollmentResultByWeb();
-        this.studyEnrollmentResultByEmail = notifications.isStudyEnrollmentResultByEmail();
-        this.studyUpdatedByWeb = notifications.isStudyUpdatedByWeb();
-        this.studyUpdatedByEmail = notifications.isStudyUpdatedByEmail();
+        this.teamCreatedByWeb = notifications.isTeamCreatedByWeb();
+        this.teamCreatedByEmail = notifications.isTeamCreatedByEmail();
+        this.teamEnrollmentResultByWeb = notifications.isTeamEnrollmentResultByWeb();
+        this.teamEnrollmentResultByEmail = notifications.isTeamEnrollmentResultByEmail();
+        this.teamUpdatedByWeb = notifications.isTeamUpdatedByWeb();
+        this.teamUpdatedByEmail = notifications.isTeamUpdatedByEmail();
     }
 
     public void updateNickname(String nickname){

@@ -26,4 +26,7 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
     boolean existsByTitle(String title);
 
     Team findTeamOnlyByPath(String path);
+    @EntityGraph(value = "Team.withTagsAndZones", type = EntityGraph.EntityGraphType.FETCH)
+    Team findTeamWithTagsAndZonesById(Long id);
+
 }

@@ -7,24 +7,24 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class Notifications {
-    private boolean studyCreatedByEmail;
+    private boolean teamCreatedByEmail;
 
-    private boolean studyCreatedByWeb;
+    private boolean teamCreatedByWeb;
 
-    private boolean studyEnrollmentResultByEmail;
+    private boolean teamEnrollmentResultByEmail;
 
-    private boolean studyEnrollmentResultByWeb;
+    private boolean teamEnrollmentResultByWeb;
 
-    private boolean studyUpdatedByEmail;
+    private boolean teamUpdatedByEmail;
 
-    private boolean studyUpdatedByWeb;
+    private boolean teamUpdatedByWeb;
 
     public Notifications(Account account) { // 기본생성자가 없으면 Model
-        this.studyCreatedByEmail = account.isStudyCreatedByEmail();
-        this.studyCreatedByWeb = account.isStudyCreatedByWeb();
-        this.studyEnrollmentResultByEmail = account.isStudyEnrollmentResultByEmail();
-        this.studyEnrollmentResultByWeb = account.isStudyUpdatedByWeb();
-        this.studyUpdatedByEmail = account.isStudyUpdatedByEmail();
-        this.studyUpdatedByWeb = account.isStudyUpdatedByWeb();
+        this.teamCreatedByEmail = account.isTeamCreatedByEmail();
+        this.teamCreatedByWeb = account.isTeamCreatedByWeb();
+        this.teamEnrollmentResultByEmail = account.isTeamEnrollmentResultByEmail();
+        this.teamEnrollmentResultByWeb = account.isTeamUpdatedByWeb();
+        this.teamUpdatedByEmail = account.isTeamUpdatedByEmail();
+        this.teamUpdatedByWeb = account.isTeamUpdatedByWeb();
     }
 }
