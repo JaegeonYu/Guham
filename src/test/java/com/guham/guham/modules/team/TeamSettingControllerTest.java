@@ -1,24 +1,25 @@
 package com.guham.guham.modules.team;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.guham.guham.infra.AbstractContainerTest;
 import com.guham.guham.infra.MockMVCTest;
-import com.guham.guham.modules.account.AccountFactory;
-import com.guham.guham.modules.account.WithAccount;
-import com.guham.guham.modules.account.AccountRepository;
 import com.guham.guham.modules.account.Account;
-import com.guham.guham.modules.tag.Tag;
-import com.guham.guham.modules.zone.Zone;
+import com.guham.guham.modules.account.AccountFactory;
+import com.guham.guham.modules.account.AccountRepository;
+import com.guham.guham.modules.account.WithAccount;
 import com.guham.guham.modules.account.form.TagForm;
 import com.guham.guham.modules.account.form.ZoneForm;
+import com.guham.guham.modules.tag.Tag;
 import com.guham.guham.modules.tag.TagRepository;
+import com.guham.guham.modules.zone.Zone;
 import com.guham.guham.modules.zone.ZoneRepository;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -27,7 +28,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @MockMVCTest
-class TeamSettingControllerTest {
+class TeamSettingControllerTest extends AbstractContainerTest {
     @Autowired
     private MockMvc mockMvc;
 

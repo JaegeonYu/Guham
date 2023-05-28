@@ -1,5 +1,6 @@
 package com.guham.guham.modules.team;
 
+import com.guham.guham.infra.AbstractContainerTest;
 import com.guham.guham.infra.MockMVCTest;
 import com.guham.guham.modules.account.WithAccount;
 import com.guham.guham.modules.account.AccountRepository;
@@ -19,7 +20,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @MockMVCTest
-class TeamControllerTest {
+class TeamControllerTest extends AbstractContainerTest {
     @Autowired
     private MockMvc mockMvc;
 

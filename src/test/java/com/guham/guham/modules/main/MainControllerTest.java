@@ -1,5 +1,6 @@
 package com.guham.guham.modules.main;
 
+import com.guham.guham.infra.AbstractContainerTest;
 import com.guham.guham.modules.account.AccountRepository;
 import com.guham.guham.modules.account.AccountService;
 import com.guham.guham.modules.account.form.SignUpForm;
@@ -21,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class MainControllerTest {
+class MainControllerTest extends AbstractContainerTest {
     @Autowired
     MockMvc mockMvc;
     @Autowired

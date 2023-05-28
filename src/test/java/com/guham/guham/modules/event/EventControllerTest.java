@@ -1,5 +1,6 @@
 package com.guham.guham.modules.event;
 
+import com.guham.guham.infra.AbstractContainerTest;
 import com.guham.guham.infra.MockMVCTest;
 import com.guham.guham.modules.account.Account;
 import com.guham.guham.modules.account.AccountFactory;
@@ -27,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @MockMVCTest
-class EventControllerTest {
+class EventControllerTest extends AbstractContainerTest {
     @Autowired
     MockMvc mockMvc;
     @Autowired

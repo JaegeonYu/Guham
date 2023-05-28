@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile("local")
+@Profile({"local","test"})
 @Slf4j
 public class ConsoleEmailService implements EmailService{
 

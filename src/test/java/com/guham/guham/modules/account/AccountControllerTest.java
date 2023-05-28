@@ -1,10 +1,12 @@
 package com.guham.guham.modules.account;
 
+import com.guham.guham.infra.AbstractContainerTest;
 import com.guham.guham.infra.MockMVCTest;
 import com.guham.guham.infra.mail.EmailMessage;
 import com.guham.guham.infra.mail.EmailService;
 import com.guham.guham.modules.account.Account;
 import com.guham.guham.modules.account.AccountRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +28,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @MockMVCTest
-class AccountControllerTest {
+class AccountControllerTest extends AbstractContainerTest {
     @Autowired
     private MockMvc mockMvc;
 
