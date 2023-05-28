@@ -2,9 +2,11 @@ package com.guham.guham.modules.team;
 
 import com.guham.guham.modules.account.Account;
 import com.guham.guham.modules.tag.Tag;
+import com.guham.guham.modules.team.event.TeamCreatedEvent;
 import com.guham.guham.modules.team.form.TeamDescriptionForm;
 import com.guham.guham.modules.zone.Zone;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,10 +16,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class TeamService {
     private final TeamRepository teamRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public Team createTeam(Team team, Account account) {
         Team newTeam = teamRepository.save(team);
         newTeam.addManager(account);
+        eventPublisher.publishEvent(new TeamCreatedEvent(newTeam));
         return newTeam;
     }
 
