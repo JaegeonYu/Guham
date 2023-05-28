@@ -1,11 +1,9 @@
-package com.guham.guham.team;
+package com.guham.guham.modules.team;
 
-import com.guham.guham.WithAccount;
+import com.guham.guham.infra.MockMVCTest;
+import com.guham.guham.modules.account.WithAccount;
 import com.guham.guham.modules.account.AccountRepository;
 import com.guham.guham.modules.account.Account;
-import com.guham.guham.modules.team.Team;
-import com.guham.guham.modules.team.TeamRepository;
-import com.guham.guham.modules.team.TeamService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,8 +18,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+@MockMVCTest
 class TeamControllerTest {
     @Autowired
     private MockMvc mockMvc;

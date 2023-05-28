@@ -1,8 +1,8 @@
-package com.guham.guham.main;
+package com.guham.guham.modules.main;
 
 import com.guham.guham.modules.account.AccountRepository;
 import com.guham.guham.modules.account.AccountService;
-import com.guham.guham.modules.account.SignUpForm;
+import com.guham.guham.modules.account.form.SignUpForm;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

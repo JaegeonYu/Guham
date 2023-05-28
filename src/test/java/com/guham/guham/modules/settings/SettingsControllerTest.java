@@ -1,14 +1,15 @@
-package com.guham.guham.settings;
+package com.guham.guham.modules.settings;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.guham.guham.WithAccount;
+import com.guham.guham.infra.MockMVCTest;
+import com.guham.guham.modules.account.WithAccount;
 import com.guham.guham.modules.account.AccountRepository;
 import com.guham.guham.modules.account.AccountService;
 import com.guham.guham.modules.account.Account;
 import com.guham.guham.modules.tag.Tag;
 import com.guham.guham.modules.zone.Zone;
-import com.guham.guham.modules.settings.form.TagForm;
-import com.guham.guham.modules.settings.form.ZoneForm;
+import com.guham.guham.modules.account.form.TagForm;
+import com.guham.guham.modules.account.form.ZoneForm;
 import com.guham.guham.modules.tag.TagRepository;
 import com.guham.guham.modules.zone.ZoneRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -23,16 +24,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.guham.guham.modules.settings.SettingsController.*;
+import static com.guham.guham.modules.account.SettingsController.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@Transactional
+@MockMVCTest
 class SettingsControllerTest {
     @Autowired
     MockMvc mockMvc;

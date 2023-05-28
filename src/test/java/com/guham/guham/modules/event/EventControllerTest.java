@@ -1,10 +1,10 @@
 package com.guham.guham.modules.event;
 
 import com.guham.guham.infra.MockMVCTest;
-import com.guham.guham.modules.account.AccountFactory;
-import com.guham.guham.modules.account.WithAccount;
-import com.guham.guham.modules.account.AccountRepository;
 import com.guham.guham.modules.account.Account;
+import com.guham.guham.modules.account.AccountFactory;
+import com.guham.guham.modules.account.AccountRepository;
+import com.guham.guham.modules.account.WithAccount;
 import com.guham.guham.modules.team.Team;
 import com.guham.guham.modules.team.TeamFactory;
 import com.guham.guham.modules.team.TeamRepository;
@@ -13,10 +13,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -62,7 +59,7 @@ class EventControllerTest {
     @WithAccount("bebe")
     public void newEnrollment_FCFS_event_accepted() throws Exception {
         Account managerAccount = accountFactory.createAccount("manager");
-        Team team = TeamFactory.createTeam("test-path", managerAccount);
+        Team team = teamFactory.createTeam("test-path", managerAccount);
         Event event = createEvent("test-event", FCFS,2, team, managerAccount);
 
         mockMvc.perform(post("/team/" + team.getPath() + "/events/" + event.getId() + "/enroll")
@@ -79,7 +76,7 @@ class EventControllerTest {
     @WithAccount("bebe")
     public void newEnrollment_FCFS_event_not_accepted() throws Exception {
         Account managerAccount = accountFactory.createAccount("manager");
-        Team team = TeamFactory.createTeam("test-path", managerAccount);
+        Team team = teamFactory.createTeam("test-path", managerAccount);
         Event event = createEvent("test-event", FCFS,2, team, managerAccount);
 
         Account one = accountFactory.createAccount("One");
@@ -101,7 +98,7 @@ class EventControllerTest {
     @WithAccount("bebe")
     public void acceptor_cancelEnrollment_FCFS_event() throws Exception {
         Account managerAccount = accountFactory.createAccount("manager");
-        Team team = TeamFactory.createTeam("test-path", managerAccount);
+        Team team = teamFactory.createTeam("test-path", managerAccount);
         Event event = createEvent("test-event", FCFS,2, team, managerAccount);
 
         Account one = accountFactory.createAccount("One");
@@ -127,7 +124,7 @@ class EventControllerTest {
     @WithAccount("bebe")
     public void not_acceptor_cancelEnrollment_FCFS_event() throws Exception {
         Account managerAccount = accountFactory.createAccount("manager");
-        Team team = TeamFactory.createTeam("test-path", managerAccount);
+        Team team = teamFactory.createTeam("test-path", managerAccount);
         Event event = createEvent("test-event", FCFS,2, team, managerAccount);
 
         Account one = accountFactory.createAccount("One");
@@ -157,7 +154,7 @@ class EventControllerTest {
     @WithAccount("bebe")
     public void newEnrollment_CONFIMATIVE_event_not_accepted() throws Exception {
         Account managerAccount = accountFactory.createAccount("manager");
-        Team team = TeamFactory.createTeam("test-path", managerAccount);
+        Team team = teamFactory.createTeam("test-path", managerAccount);
         Event event = createEvent("test-event", CONFIRMATIVE,2, team, managerAccount);
 
 

@@ -1,5 +1,6 @@
-package com.guham.guham.account;
+package com.guham.guham.modules.account;
 
+import com.guham.guham.infra.MockMVCTest;
 import com.guham.guham.infra.mail.EmailMessage;
 import com.guham.guham.infra.mail.EmailService;
 import com.guham.guham.modules.account.Account;
@@ -24,9 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@Transactional
+@MockMVCTest
 class AccountControllerTest {
     @Autowired
     private MockMvc mockMvc;

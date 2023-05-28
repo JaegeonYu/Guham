@@ -1,4 +1,4 @@
-package com.guham.guham;
+package com.guham.guham.modules.account;
 
 import org.springframework.security.test.context.support.WithSecurityContext;
 

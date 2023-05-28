@@ -1,6 +1,5 @@
-package com.guham.guham;
+package com.guham.guham.modules.account;
 
-import com.guham.guham.modules.account.AccountService;
 import com.guham.guham.modules.account.form.SignUpForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

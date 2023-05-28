@@ -1,16 +1,15 @@
-package com.guham.guham.team;
+package com.guham.guham.modules.team;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.guham.guham.WithAccount;
+import com.guham.guham.infra.MockMVCTest;
+import com.guham.guham.modules.account.AccountFactory;
+import com.guham.guham.modules.account.WithAccount;
 import com.guham.guham.modules.account.AccountRepository;
 import com.guham.guham.modules.account.Account;
 import com.guham.guham.modules.tag.Tag;
-import com.guham.guham.modules.team.Team;
-import com.guham.guham.modules.team.TeamRepository;
-import com.guham.guham.modules.team.TeamService;
 import com.guham.guham.modules.zone.Zone;
-import com.guham.guham.modules.settings.form.TagForm;
-import com.guham.guham.modules.settings.form.ZoneForm;
+import com.guham.guham.modules.account.form.TagForm;
+import com.guham.guham.modules.account.form.ZoneForm;
 import com.guham.guham.modules.tag.TagRepository;
 import com.guham.guham.modules.zone.ZoneRepository;
 import org.junit.jupiter.api.*;
@@ -27,9 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@AutoConfigureMockMvc
-@SpringBootTest
-@Transactional
+@MockMVCTest
 class TeamSettingControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -46,6 +43,11 @@ class TeamSettingControllerTest {
     private TeamService teamService;
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    private TeamFactory teamFactory;
+    @Autowired
+    private AccountFactory accountFactory;
+
     private Team team;
 
     private Zone testZone = Zone.builder().city("test")
@@ -55,8 +57,8 @@ class TeamSettingControllerTest {
 
     @BeforeEach
     public void beforeEach() {
-        team = saveTeam("test-path");
-        addManager("bebe", team);
+        Account manger = accountRepository.findByNickname("bebe");
+        team = teamFactory.createTeam("test-path", manger);
         zoneRepository.save(testZone);
     }
 
@@ -67,14 +69,6 @@ class TeamSettingControllerTest {
         zoneRepository.deleteAll();
     }
 
-    private Team saveTeam(String path) {
-        return teamRepository.save(Team.builder()
-                .path(path)
-                .title("team title")
-                .shortDescription("short Description")
-                .fullDescription("full Description")
-                .build());
-    }
 
     private void addManager(String managerName, Team team) {
         Account account = accountRepository.findByNickname(managerName);
@@ -85,7 +79,7 @@ class TeamSettingControllerTest {
     @DisplayName("팀 설명 수정 화면")
     @WithAccount("bebe") // 접근자 == 매니저
     public void descriptionForm() throws Exception {
-        mockMvc.perform(get("/team/test-path/settings/description"))
+        mockMvc.perform(get("/team/"+team.getEncodedPath()+"/settings/description"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("team/settings/description"))
                 .andExpect(model().attributeExists("team", "account", "teamDescriptionForm"));
