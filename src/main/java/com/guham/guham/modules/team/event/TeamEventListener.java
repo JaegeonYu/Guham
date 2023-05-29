@@ -14,16 +14,20 @@ import com.guham.guham.modules.team.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Component
 @Slf4j
 @Transactional
+@Async
 @RequiredArgsConstructor
 public class TeamEventListener {
     private final TeamRepository teamRepository;
@@ -46,6 +50,24 @@ public class TeamEventListener {
             }
             if (account.isTeamCreatedByWeb()) {
                 createNotification(team, account, team.getShortDescription(), NotificationType.TEAM_CREATED);
+            }
+        });
+    }
+
+    @EventListener
+    public void handleTeamUpdateEvent(TeamUpdateEvent teamUpdateEvent){
+        Team team = teamRepository.findTeamWithManagersAndMembersById(teamUpdateEvent.getTeam().getId());
+        Set<Account> accounts = new HashSet<>();
+        accounts.addAll(team.getManagers());
+        accounts.addAll(team.getMembers());
+
+        accounts.forEach(account -> {
+            if (account.isTeamCreatedByEmail()) {
+                sendTeamCreatedEmail(team, account, teamUpdateEvent.getMessage(),
+                        "팀빌딩 구함, '"+team.getTitle()+"' 팀에 새 소식이 있습니다.");
+            }
+            if (account.isTeamCreatedByWeb()) {
+                createNotification(team, account, teamUpdateEvent.getMessage(), NotificationType.TEAM_UPDATED);
             }
         });
     }

@@ -34,4 +34,7 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
     @EntityGraph(attributePaths = {"tags", "zones"})
     Team findTeamWithTagsAndZonesById(Long id);
 
+    @EntityGraph(attributePaths = {"members", "managers"})
+    Team findTeamWithManagersAndMembersById(Long id);
+
 }

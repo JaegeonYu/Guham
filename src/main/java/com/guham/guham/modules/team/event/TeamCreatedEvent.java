@@ -3,11 +3,10 @@ package com.guham.guham.modules.team.event;
 import com.guham.guham.modules.team.Team;
 import lombok.Data;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEvent;
 @Getter
+@RequiredArgsConstructor
 public class TeamCreatedEvent{
-    private Team team;
-    public TeamCreatedEvent(Team newTeam) {
-        this.team = newTeam;
-    }
+    private final Team team;
 }
