@@ -20,29 +20,6 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@NamedEntityGraph(name = "Team.withAll", attributeNodes = {
-        @NamedAttributeNode("tags"),
-        @NamedAttributeNode("zones"),
-        @NamedAttributeNode("managers"),
-        @NamedAttributeNode("members")})
-@NamedEntityGraph(name = "Team.withTagsAndManager", attributeNodes = {
-        @NamedAttributeNode("tags"),
-        @NamedAttributeNode("managers")
-})
-@NamedEntityGraph(name = "Team.withZonesAndManager", attributeNodes = {
-        @NamedAttributeNode("zones"),
-        @NamedAttributeNode("managers")
-})
-@NamedEntityGraph(name = "Team.withManager", attributeNodes = {
-        @NamedAttributeNode("managers")
-})
-@NamedEntityGraph(name = "Team.withMember", attributeNodes = {
-        @NamedAttributeNode("members")
-})
-@NamedEntityGraph(name = "Team.withTagsAndZones", attributeNodes = {
-        @NamedAttributeNode("tags"),
-        @NamedAttributeNode("zones")
-})
 public class Team {
     @Id
     @GeneratedValue

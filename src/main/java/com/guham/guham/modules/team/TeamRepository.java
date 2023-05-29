@@ -9,24 +9,29 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
     boolean existsByPath(String path);
 
     // findByPath 발생 시 Team의 member, manager, zones, tags 모두  필요
-    @EntityGraph(value = "Team.withAll", type = EntityGraph.EntityGraphType.LOAD)
+
+    @EntityGraph(attributePaths = {"tags", "zones", "managers", "members"}, type = EntityGraph.EntityGraphType.LOAD)
     Team findByPath(String path);
-    @EntityGraph(value = "Team.withTagsAndManager", type = EntityGraph.EntityGraphType.FETCH)
+
+    @EntityGraph(attributePaths = {"tags", "managers"})
     Team findTeamWithTagsByPath(String path);
 
-    @EntityGraph(value = "Team.withZonesAndManager", type = EntityGraph.EntityGraphType.FETCH)
+
+    @EntityGraph(attributePaths = {"zones", "managers"})
     Team findTeamWithZonesByPath(String path);
 
-    @EntityGraph(value = "Team.withManager", type = EntityGraph.EntityGraphType.FETCH)
+    @EntityGraph(attributePaths = "managers")
     Team findTeamWithManagersByPath(String path);
 
-    @EntityGraph(value = "Team.withMember", type = EntityGraph.EntityGraphType.FETCH)
+
+    @EntityGraph(attributePaths = "members")
     Team findTeamWithMembersByPath(String path);
 
     boolean existsByTitle(String title);
 
     Team findTeamOnlyByPath(String path);
-    @EntityGraph(value = "Team.withTagsAndZones", type = EntityGraph.EntityGraphType.FETCH)
+
+    @EntityGraph(attributePaths = {"tags", "zones"})
     Team findTeamWithTagsAndZonesById(Long id);
 
 }
