@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional(readOnly = true)
-public interface TeamRepository extends JpaRepository<Team, Long> {
+public interface TeamRepository extends JpaRepository<Team, Long> , TeamRepositoryExtension{
     boolean existsByPath(String path);
 
     // findByPath 발생 시 Team의 member, manager, zones, tags 모두  필요

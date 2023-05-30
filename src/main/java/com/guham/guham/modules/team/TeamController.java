@@ -78,4 +78,6 @@ public class TeamController {
         teamService.removeMember(team, account);
         return "redirect:/team/"+team.getEncodedPath()+"/members";
     }
+
+
 }
