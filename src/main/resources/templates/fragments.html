@@ -87,7 +87,7 @@
 
 <footer th:fragment="footer">
   <div class="row justify-content-center">
-    <img class="mb-2" src="/images/bird.png" alt="studyolle" width="50" height="50">
+    <img class="mb-2" src="/images/bird.png" alt="teamolle" width="50" height="50">
     <small class="d-block mb-3 text-muted">&copy; 2023</small>
   </div>
 </footer>
@@ -520,5 +520,40 @@
         <p th:text="${noti.message}" class="text-left mb-0 mt-1">message</p>
     </a>
 </ul>
+
+<div th:fragment="team-list (teamList)" class="col-sm-12">
+    <div class="row">
+        <div class="col-md-4" th:each="team: ${teamList}">
+            <div class="card mb-4 shadow-sm">
+                <img th:src="${team.image}" class="card-img-top" th:alt="${team.title}" >
+                <div class="card-body">
+                    <a th:href="@{'/team/' + ${team.path}}" class="text-decoration-none">
+                        <h5 class="card-title context" th:text="${team.title}"></h5>
+                    </a>
+                    <p class="card-text" th:text="${team.shortDescription}">Short description</p>
+                    <p class="card-text context">
+                                <span th:each="tag: ${team.tags}" class="font-weight-light text-monospace badge badge-pill badge-info mr-3">
+                                    <a th:href="@{'/search/tag/' + ${tag.title}}" class="text-decoration-none text-white">
+                                        <i class="fa fa-tag"></i> <span th:text="${tag.title}">Tag</span>
+                                    </a>
+                                </span>
+                        <span th:each="zone: ${team.zones}" class="font-weight-light text-monospace badge badge-primary mr-3">
+                                    <a th:href="@{'/search/zone/' + ${zone.id}}" class="text-decoration-none text-white">
+                                        <i class="fa fa-globe"></i> <span th:text="${zone.localNameOfCity}" class="text-white">City</span>
+                                    </a>
+                                </span>
+                    </p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="fa fa-user-circle"></i>
+                            <span th:text="${team.memberCount}"></span>명
+                        </small>
+                        <small class="text-muted date" th:text="${team.publishedDateTime}">9 mins</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 </html>
