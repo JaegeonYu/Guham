@@ -1,7 +1,9 @@
 package com.guham.guham.modules.main;
 
+import com.guham.guham.modules.account.AccountRepository;
 import com.guham.guham.modules.account.CurrentAccount;
 import com.guham.guham.modules.account.Account;
+import com.guham.guham.modules.event.EnrollmentRepository;
 import com.guham.guham.modules.team.Team;
 import com.guham.guham.modules.team.TeamRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,17 +15,24 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import java.util.List;
-
 @Controller
 @RequiredArgsConstructor
 public class MainController {
     private final TeamRepository teamRepository;
+    private final AccountRepository accountRepository;
+    private final EnrollmentRepository enrollmentRepository;
 
     @GetMapping("/")
     public String home(@CurrentAccount Account account, Model model){
         if(account != null){
             model.addAttribute(account);
+            Account accountLoaded = accountRepository.findAccountWithTagsAndZonesById(account.getId());
+            model.addAttribute(accountLoaded);
+            model.addAttribute("enrollmentList", enrollmentRepository.findByAccountAndAcceptedOrderByEnrolledAtDesc(account, true));
+            model.addAttribute("teamList", teamRepository.findByAccount(accountLoaded.getTags(), accountLoaded.getZones()));
+            model.addAttribute("teamManagerOf", teamRepository.findFirst5ByManagersContainingAndClosedOrderByPublishedDateTimeDesc(account, false));
+            model.addAttribute("teamMemberOf", teamRepository.findFirst5ByMembersContainingAndClosedOrderByPublishedDateTimeDesc(account, false));
+            return "index-after-login";
         }
         model.addAttribute("teamList", teamRepository.findFirst9ByPublishedAndClosedOrderByPublishedDateTimeDesc(true, false));
         return "index";
