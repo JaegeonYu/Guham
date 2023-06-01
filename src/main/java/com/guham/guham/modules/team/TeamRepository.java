@@ -4,6 +4,8 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Transactional(readOnly = true)
 public interface TeamRepository extends JpaRepository<Team, Long> , TeamRepositoryExtension{
     boolean existsByPath(String path);
@@ -36,5 +38,6 @@ public interface TeamRepository extends JpaRepository<Team, Long> , TeamReposito
 
     @EntityGraph(attributePaths = {"members", "managers"})
     Team findTeamWithManagersAndMembersById(Long id);
-
+    @EntityGraph(attributePaths = {"zones", "tags"})
+    List<Team> findFirst9ByPublishedAndClosedOrderByPublishedDateTimeDesc(boolean published, boolean closed);
 }

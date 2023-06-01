@@ -1,6 +1,5 @@
 package com.guham.guham.modules.team;
 
-import com.guham.guham.modules.account.QAccount;
 import com.guham.guham.modules.tag.QTag;
 import com.guham.guham.modules.zone.QZone;
 import com.querydsl.core.QueryResults;
@@ -9,8 +8,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
-
-import java.util.List;
 
 public class TeamRepositoryImpl extends QuerydslRepositorySupport implements TeamRepositoryExtension{
     /**
@@ -30,7 +27,6 @@ public class TeamRepositoryImpl extends QuerydslRepositorySupport implements Tea
                 .or(team.zones.any().localNameOfCity.containsIgnoreCase(keyword)))
                 .leftJoin(team.tags, QTag.tag).fetchJoin()
                 .leftJoin(team.zones, QZone.zone).fetchJoin()
-                .leftJoin(team.members, QAccount.account).fetchJoin()
                 .distinct();
 
         JPQLQuery<Team> teamJPQLQuery = getQuerydsl().applyPagination(pageable, query);

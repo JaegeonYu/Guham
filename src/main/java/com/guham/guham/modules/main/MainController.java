@@ -25,6 +25,7 @@ public class MainController {
         if(account != null){
             model.addAttribute(account);
         }
+        model.addAttribute("teamList", teamRepository.findFirst9ByPublishedAndClosedOrderByPublishedDateTimeDesc(true, false));
         return "index";
     }
 

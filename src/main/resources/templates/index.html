@@ -10,10 +10,23 @@
 <div class="container">
     <div class="py-5 text-center">
         <h2>팀빌딩 구함</h2>
+        <p class="lead text-muted">
+            태그와 지역 기반으로 공모전 팀을 찾고 참여하세요.<br/>
+            팀 모임 관리 기능을 제공합니다.
+        </p>
+        <p>
+            <a th:href="@{/sign-up}" class="btn btn-primary my-2">회원 가입</a>
+        </p>
     </div>
 
-    <div th:replace="fragments::footer"></div>
+    <div class="container">
+        <div class="row justify-content-center pt-3">
+            <div th:replace="fragments :: team-list (teamList=${teamList})"></div>
+        </div>
+    </div>
+
+    <div th:replace="fragments :: footer"></div>
+    <div th:replace="fragments :: date-time"></div>
 </div>
-<script th:replace="fragments::form-validation"></script>
 </body>
 </html>
