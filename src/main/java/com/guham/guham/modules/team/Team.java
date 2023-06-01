@@ -67,6 +67,8 @@ public class Team {
     @Builder.Default
     private boolean useBanner = false;
 
+    private int memberCount;
+
 
     public void addManager(Account account) {
         this.managers.add(account);
@@ -162,13 +164,17 @@ public class Team {
 
     public void addMember(Account account) {
         members.add(account);
+        memberCount++;
     }
 
     public void removeMember(Account account) {
         members.remove(account);
+        memberCount--;
     }
 
     public boolean isManaged(Account account) {
         return this.managers.contains(account);
     }
+
+
 }

@@ -31,7 +31,7 @@ public class SecurityConfig {
         http.authorizeRequests()
                 .mvcMatchers("/login").not().fullyAuthenticated()
                 .mvcMatchers("/", "sign-up", "check-email-token",
-                        "/email-login", "/check-email-login", "/login-link", "/login-by-email").permitAll()
+                        "/email-login", "/check-email-login", "/login-link", "/login-by-email","/search/team").permitAll()
                 .mvcMatchers(HttpMethod.GET, "/profile/*").permitAll()
                 .anyRequest().authenticated();
 
