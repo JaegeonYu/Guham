@@ -2,9 +2,12 @@ package com.guham.guham.modules.team;
 
 import com.guham.guham.modules.account.Account;
 import com.guham.guham.modules.tag.Tag;
+import com.guham.guham.modules.team.event.TeamCreatedEvent;
+import com.guham.guham.modules.team.event.TeamUpdateEvent;
 import com.guham.guham.modules.team.form.TeamDescriptionForm;
 import com.guham.guham.modules.zone.Zone;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class TeamService {
     private final TeamRepository teamRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public Team createTeam(Team team, Account account) {
         Team newTeam = teamRepository.save(team);
@@ -68,6 +72,7 @@ public class TeamService {
 
     public void updateTeamDescription(Team team, TeamDescriptionForm teamDescriptionForm) {
         team.updateDescription(teamDescriptionForm);
+        eventPublisher.publishEvent(new TeamUpdateEvent(team, "팀 소개를 수정했습니다."));
     }
 
     public void enableTeamBanner(Team team) {
@@ -101,19 +106,22 @@ public class TeamService {
 
     public void publish(Team team) {
         team.publish();
-
+        eventPublisher.publishEvent(new TeamCreatedEvent(team));
     }
 
     public void close(Team team) {
         team.close();
+        eventPublisher.publishEvent(new TeamUpdateEvent(team, "팀이 종료했습니다."));
     }
 
     public void startRecruit(Team team) {
         team.startRecruit();
+        eventPublisher.publishEvent(new TeamUpdateEvent(team, "팀원 모집을 시작합니다."));
     }
 
     public void stopRecruit(Team team) {
         team.stopRecruit();
+        eventPublisher.publishEvent(new TeamUpdateEvent(team, "팀원 모집을 종료합니다."));
     }
 
     public boolean isValidPath(String newPath) {

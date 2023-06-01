@@ -1,6 +1,7 @@
 package com.guham.guham.infra.config;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.security.StaticResourceLocation;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +15,9 @@ import org.springframework.security.web.authentication.rememberme.JdbcTokenRepos
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
 import javax.sql.DataSource;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Configuration
 @EnableWebSecurity
@@ -25,15 +29,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .mvcMatchers("/", "/login", "sign-up", "check-email-token",
-                        "/email-login", "/check-email-login", "/login-link", "/h2-console/**", "/login-by-email").permitAll()
+                .mvcMatchers("/login").not().fullyAuthenticated()
+                .mvcMatchers("/", "sign-up", "check-email-token",
+                        "/email-login", "/check-email-login", "/login-link", "/login-by-email").permitAll()
                 .mvcMatchers(HttpMethod.GET, "/profile/*").permitAll()
-                .anyRequest().authenticated()
-                .and().csrf().ignoringAntMatchers("/h2-console/**")
-                .and().headers().frameOptions().sameOrigin();
+                .anyRequest().authenticated();
 
         http.formLogin()
-                .loginPage("/login").permitAll();
+                .loginPage("/login");
 
         http.logout()
                 .logoutSuccessUrl("/");
@@ -54,10 +57,10 @@ public class SecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer(){
-        return web -> {
-            web.ignoring()
-                    .mvcMatchers("/node_modules/**", "/favicon.ico",  "/resources/static/**")
+
+        return web -> web.ignoring()
+                    .mvcMatchers("/node_modules/**","/templates/**")
                     .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
-        };
+
     }
 }

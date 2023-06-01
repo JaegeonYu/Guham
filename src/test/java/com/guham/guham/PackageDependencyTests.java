@@ -6,6 +6,7 @@ import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.library.dependencies.syntax.GivenSlices;
 import org.junit.jupiter.api.Test;
 
+import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAnyPackage;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
 
@@ -23,15 +24,15 @@ public class PackageDependencyTests {
     @Test
     public void teamPackageRuleCheck(){
         ArchRule teamPackageRule = classes().that().resideInAPackage(TEAM)
-                .should().accessClassesThat()
-                .resideInAnyPackage(TEAM, EVENT);
+                .should().onlyBeAccessed()
+                .byClassesThat().resideInAnyPackage(TEAM, EVENT);
         teamPackageRule.check(jc);
     }
 
     @Test
     public void eventPackageRuleCheck(){
         ArchRule eventPackageRule = classes().that().resideInAPackage(EVENT)
-                .should().onlyBeAccessed().byClassesThat()
+                .should().accessClassesThat()
                 .resideInAnyPackage(TEAM,ACCOUNT, EVENT);
         eventPackageRule.check(jc);
     }
