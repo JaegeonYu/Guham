@@ -1,5 +1,6 @@
 package com.guham.guham.modules.team;
 
+import com.guham.guham.modules.account.Account;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,4 +41,9 @@ public interface TeamRepository extends JpaRepository<Team, Long> , TeamReposito
     Team findTeamWithManagersAndMembersById(Long id);
     @EntityGraph(attributePaths = {"zones", "tags"})
     List<Team> findFirst9ByPublishedAndClosedOrderByPublishedDateTimeDesc(boolean published, boolean closed);
+
+    // 쿼리할 때 연관관계 엔티티 참조는 N+1 나지 않음, 결과로 들고 올 때 연관관계 엔티티 들고 올 때는 N+1 해결
+    List<Team> findFirst5ByManagersContainingAndClosedOrderByPublishedDateTimeDesc(Account account, boolean closed);
+
+    List<Team> findFirst5ByMembersContainingAndClosedOrderByPublishedDateTimeDesc(Account account, boolean closed);
 }
