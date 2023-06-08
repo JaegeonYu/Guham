@@ -14,4 +14,4 @@
 - [ ] [Srping Event, Async](https://anythingis.tistory.com/158)
 - [ ] [QueryDSL](https://anythingis.tistory.com/159)
 ### 참고
- -[ ] 인프런 - 스프링과 JPA 기반 웹 애플리케이션 개발(백기선) 강의
+- [ ] 인프런 - 스프링과 JPA 기반 웹 애플리케이션 개발(백기선) 강의
